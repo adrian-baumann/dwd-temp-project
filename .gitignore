@@ -1,0 +1,28 @@
+# IDE and environment
+.vscode/
+.envrc
+.python-version
+__pycache__
+
+# raw data, too big to upload to github
+data
+
+# jupyter related
+.ipynb_checkpoints
+
+# terraform
+terraform.tfvars
+.terraform
+.terraform.lock.hcl
+terraform.tfstate
+terraform.tfstate.backup
+
+# Default .gitignore content added by dbt Cloud
+target/
+dbt_packages/
+logs/
+# end dbt Cloud content
+
+# poetry
+poetry.lock
+pyproject.toml

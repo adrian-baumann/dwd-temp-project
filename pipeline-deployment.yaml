@@ -1,0 +1,77 @@
+###
+### A complete description of a Prefect Deployment for flow 'ETL_Parent_Flow'
+###
+name: Github Storage Flow
+description: Creates flows handling the download, unpacking, transforming, saving
+  and uploading.
+version: f7537a8d6a27894e2e61937d3c55af0e
+# The work queue that will handle this deployment's runs
+work_queue_name: default
+work_pool_name: default-agent-pool
+tags: []
+parameters: {}
+schedule: null
+is_schedule_active: true
+infra_overrides: {}
+
+###
+### DO NOT EDIT BELOW THIS LINE
+###
+flow_name: ETL_Parent_Flow
+manifest_path: null
+infrastructure:
+  type: process
+  env: {}
+  labels: {}
+  name: null
+  command: null
+  stream_output: true
+  working_dir: null
+  _block_document_id: ece6c648-da30-4ab0-b8f9-8aeaad58a9b6
+  _block_document_name: anonymous-435746a6-0ec5-42cc-8c84-ea0a8a86331d
+  _is_anonymous: true
+  block_type_slug: process
+  _block_type_slug: process
+storage:
+  repository: https://github.com/adrian-baumann/dtc-de-zoomcamp.git
+  reference: null
+  access_token: null
+  include_git_objects: false
+  _block_document_id: 7415d394-a9cd-4f8d-a717-7124d6755d7c
+  _block_document_name: gh-dtc-storage
+  _is_anonymous: false
+  block_type_slug: github
+  _block_type_slug: github
+path: week7/
+entrypoint: week7/pipeline_web_to_gcs_bucket.py:etl_parent_flow
+parameter_openapi_schema:
+  title: Parameters
+  type: object
+  properties:
+    dataset_categories:
+      title: dataset_categories
+      default:
+      - historical
+      - recent
+      position: 0
+      type: array
+      items:
+        type: string
+    df_names:
+      title: df_names
+      default:
+      - main
+      - metadata_geo
+      - metadata_operator
+      position: 1
+      type: array
+      items:
+        type: string
+    download_data:
+      title: download_data
+      default: false
+      position: 2
+      type: boolean
+  required: null
+  definitions: null
+timestamp: '2023-03-30T09:52:10.223974+00:00'
