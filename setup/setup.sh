@@ -3,9 +3,8 @@
 # DESCRIPTION:
 # TODO: ADD DESCRIPTION
 
-# ----------------------------------------------------------------
-
-# DOCKER
+# -------------------------------------------------------------
+# -------------------------DOCKER------------------------------
 
 # Update the apt package index and install packages to allow apt to use a repository over HTTPS
 sudo apt update
@@ -25,19 +24,38 @@ sudo apt install -y docker-ce
 sudo apt-get update
 sudo apt-get install docker-compose-plugin
 
-# ----------------------------------------------------------------
+# -------------------------------------------------------------
+# ------------------------PROJECT------------------------------
 
-# ----------------------------------------------------------------
-
-# PROJECT
 
 # Clone project repo
-git clone https://github.com/adrian-baumann/dtc-de-zoomcamp.git
+git clone https://github.com/adrian-baumann/dwd-temp-project.git
 
-cd ./dtc-de-zoomcamp/week7/requirements.txt
+# change directory
+cd ./dwd-temp-project
 
+# install dependencies, requirements.txt created from poetry.lock file
 pip install -r requirements.txt
 
+# build prefect-gcp block for use in deployement
+python ./prefect_blocks.py
+
+# run prefect server and agent in the background
+source ./setup/prefect_server.sh &
+source ./setup/prefect_agent.sh &
+
+# configure server API
+prefect config set PREFECT_API_URL=http://127.0.0.1:4200/api
+
+# build and apply deployment
+prefect deployment build ./pipeline_web_to_gcs_bucket.py:etl_parent_flow \
+--cron "*/1 * * * *"
+-n "Web to GCS Flow" \
+-o ./pipeline-deployment.yaml \
+--apply
+
+# run deployment
+python ./prefect_run.py
 
 # TODO: pre-commit hook for the following:
 # poetry export -f requirements.txt -o requirements.txt --without-hashes
