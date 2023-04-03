@@ -25,9 +25,9 @@ service_account_info = {
 
 GcpCredentials(
     service_account_info=service_account_info
-).save("GCP-CREDENTIALS-BLOCK")
+).save("gcp-credentials-block")
 
-gcp_credentials = GcpCredentials.load(os.environ["GCP-CREDENTIALS-BLOCK"])
+gcp_credentials = GcpCredentials.load(os.environ["gcp-credentials-block"])
 
 cloud_storage_client = gcp_credentials.get_cloud_storage_client()
 cloud_storage_client.create_bucket(os.environ["BUCKET_NAME"])
