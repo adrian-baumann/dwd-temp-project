@@ -332,9 +332,8 @@ def etl_web_to_local(category: str) -> Path:
 
     # Downloading starts here
     for count, link_and_category in enumerate(links_and_categories):
-        download_files(url, link_and_category)
+        download_files.submit(url, link_and_category)
         print(f"downloads finished: {count}/{num_links}")
-    unzip(category)
 
 
 @flow(
@@ -382,6 +381,7 @@ def etl_parent_flow(
     if download_data:
         for category in dataset_categories:
             etl_web_to_local(category)
+            unzip(category)
     for df_name in df_names:
         paths.append(etl_transform_write(df_name))
     for path in paths:
