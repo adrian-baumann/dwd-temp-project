@@ -53,15 +53,17 @@ if [ -d "$HOME/.local/bin" ] ; then
     PATH="$HOME/.local/bin:$PATH"
 fi
 
-direnv allow .
+if [ -d "$HOME/$USER/.local/bin" ] ; then
+    PATH="$HOME/$USER/.local/bin:$PATH"
+fi
+
+# Source envs
+source ./.envrc
+direnv allow
 
 # install dependencies, requirements.txt created from poetry.lock file
 pip3 install -r requirements.txt
 
-# Make sure your bin is in the PATH
-if [ -d "$HOME/.local/bin" ] ; then
-    PATH="$HOME/.local/bin:$PATH"
-fi
 # build prefect-gcp block for use in deployement
 python3 ./prefect_blocks.py
 
