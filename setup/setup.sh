@@ -37,6 +37,9 @@ sudo apt install python3-pip
 # -------------------------------------------------------------
 # ------------------------PROJECT------------------------------
 
+# some env vars
+export BUCKET_NAME="dwd-temp-daily" # name of the storage bucket
+
 
 # Clone project repo
 git clone https://github.com/adrian-baumann/dwd-temp-project.git
