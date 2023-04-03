@@ -1,5 +1,5 @@
 import re
-import os
+import os, sys
 from pathlib import Path
 import pandas as pd
 import pyarrow as pa
@@ -16,6 +16,8 @@ from bs4 import BeautifulSoup
 from zipfile import ZipFile
 
 import gc
+
+sys.setrecursionlimit(3000)
 
 @task(
     name="Get-File_links",
