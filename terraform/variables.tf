@@ -9,12 +9,12 @@ variable "terraform_service_account" {
 }
 
 variable "engine_private_key_file" {
-  description = "value"
+  description = "Private ssh key file for communicating with VMs in gcloud"
   type        = string
 }
 
 variable "data_lake_bucket" {
-  description = "value"
+  description = "Name of the datalake bucket to store the data in"
   type        = string
 }
 

@@ -75,7 +75,6 @@ resource "google_bigquery_dataset" "dataset" {
   location                   = var.region
 }
 
-
 # VM
 # Ref: https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_instance
 resource "google_compute_instance" "default" {
@@ -120,10 +119,8 @@ resource "google_compute_instance" "default" {
       type        = "ssh"
       user        = var.username
       host        = google_compute_instance.default.network_interface.0.access_config.0.nat_ip
+      private_key = file("${var.engine_private_key_file}")
       agent       = false
-      private_key = file("~/.ssh/google_compute_engine")
     }
   }
 }
-
-# TODO: Use metadata script to execute cloning of repo
