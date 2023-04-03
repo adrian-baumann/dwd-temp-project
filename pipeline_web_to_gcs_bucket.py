@@ -17,7 +17,6 @@ from zipfile import ZipFile
 
 import gc
 
-sys.setrecursionlimit(3000)
 
 @task(
     name="Get-File_links",
@@ -30,19 +29,19 @@ sys.setrecursionlimit(3000)
     cache_expiration=timedelta(days=1),
 )
 def get_file_links(url: str, category: str) -> list:
-        """Get urls of files"""
-        tmp_url = url + category 
-        page = requests.get(tmp_url)
-        soup = BeautifulSoup(page.content, "html.parser")
-        links = soup.find_all("a", href=re.compile(".pdf$|.txt$|.zip$"))
-        print("found {} files for download".format(len(links)))
-        
-        return [[link, category] for link in links]
+    """Get urls of files"""
+    tmp_url = url + category
+    page = requests.get(tmp_url)
+    soup = BeautifulSoup(page.content, "html.parser")
+    links = soup.find_all("a", href=re.compile(".pdf$|.txt$|.zip$"))
+    print("found {} files for download".format(len(links)))
+
+    return [[link, category] for link in links]
 
 
 @task(
     name="Download-Files",
-    task_run_name="download-{category}-files",
+    task_run_name="download-{link_and_category[1]}-files",
     description="Downloads compressed files from two endpoints of the DWD Opendata website.",
     version=os.getenv("GIT_COMMIT_SHA"),
     log_prints=True,
@@ -51,17 +50,17 @@ def get_file_links(url: str, category: str) -> list:
     cache_key_fn=task_input_hash,
     cache_expiration=timedelta(days=1),
 )
-def download_files(link_and_category: list) -> None:
+def download_files(url: str, link_and_category: list) -> None:
     """
     Download daily mean of the observed air temperatures at 2m height above ground from DWD (German Meteorological Service).
     Loading can take some time as it is intentionally slowed down to decrease load on opendata server.
     """
 
-    link, category = link_and_category 
+    link, category = link_and_category
 
     save_path = Path(f"./data/{category}/download")
-    save_path.mkdir(parents=True, exist_ok=True) 
-    
+    save_path.mkdir(parents=True, exist_ok=True)
+
     file_path = save_path / link["href"]
     mode = "w+b" if "pdf" or "zip" in link["href"] else "w+"
     file_url = url + link["href"]
@@ -71,9 +70,6 @@ def download_files(link_and_category: list) -> None:
                 file.write(response.content)
                 sleep(0.5)
     # TODO: add error handler for timeout with too many requests
-
-
-
 
 
 @task(
@@ -129,7 +125,7 @@ def unzip(category: str) -> None:
     log_prints=True,
     cache_key_fn=task_input_hash,
     cache_expiration=timedelta(days=1),
-    )
+)
 def fetch_dataset(df_name: str) -> (pd.DataFrame, str()):
     """Reads in datasets by creating lists of small dataframes and concatenating them"""
     print(f"loading {df_name} dataset into a pandas dataframe")
@@ -214,9 +210,7 @@ def fetch_dataset(df_name: str) -> (pd.DataFrame, str()):
                 dtype_backend="pyarrow",
                 na_values=None,
             )
-            for file in Path("./data/recent/metadata").glob(
-                "Metadaten_Geographie*"
-            )
+            for file in Path("./data/recent/metadata").glob("Metadaten_Geographie*")
         ]
 
         df_hist_lst = [
@@ -228,9 +222,7 @@ def fetch_dataset(df_name: str) -> (pd.DataFrame, str()):
                 dtype_backend="pyarrow",
                 na_values=None,
             )
-            for file in Path("./data/historical/metadata").glob(
-                "Metadaten_Geographie*"
-            )
+            for file in Path("./data/historical/metadata").glob("Metadaten_Geographie*")
         ]
 
         df = pd.concat(df_new_lst + df_hist_lst).reset_index(drop=True)
@@ -271,7 +263,7 @@ def fetch_dataset(df_name: str) -> (pd.DataFrame, str()):
     log_prints=True,
     cache_key_fn=task_input_hash,
     cache_expiration=timedelta(days=1),
-    )
+)
 def transform(df: pd.DataFrame, df_name: str) -> pd.DataFrame:
     """Fix dtype issues"""
 
@@ -309,13 +301,14 @@ def transform(df: pd.DataFrame, df_name: str) -> pd.DataFrame:
     log_prints=True,
     cache_key_fn=task_input_hash,
     cache_expiration=timedelta(days=1),
-    )
+)
 def write_local(df: pd.DataFrame, df_name: str) -> Path:
     """Write DataFrame out locally as parquet file"""
     path = Path(f"./data/parquet/{df_name}.parquet")
     path.parent.mkdir(parents=True, exist_ok=True)
     df.to_parquet(path, compression="gzip")
     return path
+
 
 @task(
     name="Write-to-GCS",
@@ -324,30 +317,31 @@ def write_local(df: pd.DataFrame, df_name: str) -> Path:
     version=os.getenv("GIT_COMMIT_SHA"),
     log_prints=True,
     timeout_seconds=600,
-    )
+)
 def write_gcs(path: Path) -> None:
     """Upload local parquet file using `path` object to GCS"""
     gcs_block = GcsBucket.load("gcs-dtc-bucket")
     gcs_block.upload_from_path(from_path=path, to_path=path, timeout=600)
-    return  
+    return
+
 
 @flow(
     name="ETL_Web-to-Local",
     flow_run_name="download-{category}-files",
     description="Downloads and unzips files from DWD Opendata website.",
     version=os.getenv("GIT_COMMIT_SHA"),
-    log_prints=True
-    )
-def etl_web_to_local(category: str, poolsize: int = 5, chunksize: int = 2) -> Path:
+    log_prints=True,
+)
+def etl_web_to_local(category: str) -> Path:
     """The main E function"""
     url = "https://opendata.dwd.de/climate_environment/CDC/observations_germany/climate/daily/kl/"
-    links_and_category = get_file_links(url, category)
-    num_links = len(links)
+    links_and_categories = get_file_links(url, category)
+    num_links = len(links_and_categories)
 
     # Downloading starts here
-    with ThreadPool(poolsize) as pool:
-        for count, result in enumerate(pool.imap_unordered(download_files, links_and_category, chunksize=chunksize)):
-            print(f"downloads finished: {count}/{num_links}")
+    for count, link_and_category in enumerate(links_and_categories):
+        download_files(url, link_and_category)
+        print(f"downloads finished: {count}/{num_links}")
     unzip(category)
 
 
@@ -356,8 +350,8 @@ def etl_web_to_local(category: str, poolsize: int = 5, chunksize: int = 2) -> Pa
     flow_run_name="transform-{df_name}-dataset",
     description="Transforms and saves dataset to parquet-file.",
     version=os.getenv("GIT_COMMIT_SHA"),
-    log_prints=True
-    )
+    log_prints=True,
+)
 def etl_transform_write(df_name: str) -> Path:
     """The main T function"""
 
@@ -373,8 +367,8 @@ def etl_transform_write(df_name: str) -> Path:
     flow_run_name="upload-to-{path}",
     description="Writes local data to Google Cloud Storage using the GCSBucket Block.",
     version=os.getenv("GIT_COMMIT_SHA"),
-    log_prints=True
-    )
+    log_prints=True,
+)
 def etl_local_to_gcs(path: Path) -> None:
     """The main L function"""
     write_gcs(path)
@@ -385,13 +379,13 @@ def etl_local_to_gcs(path: Path) -> None:
     flow_run_name="orchestrate-child-flows",
     description="Creates flows handling the download, unpacking, transforming, saving and uploading.",
     version=os.getenv("GIT_COMMIT_SHA"),
-    log_prints=True
-    )
+    log_prints=True,
+)
 def etl_parent_flow(
-    dataset_categories: list[str] = ["historical", "recent"], 
-    df_names: list[str] = ["main", "metadata_geo", "metadata_operator"], 
-    download_data: bool = False
-    ) -> None:
+    dataset_categories: list[str] = ["historical", "recent"],
+    df_names: list[str] = ["main", "metadata_geo", "metadata_operator"],
+    download_data: bool = False,
+) -> None:
     paths = []
     if download_data:
         for category in dataset_categories:
