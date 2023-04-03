@@ -30,7 +30,6 @@ def main() -> None:
   gcp_credentials = GcpCredentials.load("gcp-credentials-block")
 
   cloud_storage_client = gcp_credentials.get_cloud_storage_client()
-  cloud_storage_client.create_bucket(os.environ["BUCKET_NAME"])
   gcs_bucket = GcsBucket(
       bucket=os.environ["BUCKET_NAME"],
       gcp_credentials=gcp_credentials,
