@@ -47,7 +47,13 @@ git clone https://github.com/adrian-baumann/dwd-temp-project.git
 mv ./.envrc ./dwd-temp-project/ 
 # change directory and direnv allow
 cd ./dwd-temp-project
-direnv allow
+
+# Make sure your bin is in the PATH
+if [ -d "$HOME/.local/bin" ] ; then
+    PATH="$HOME/.local/bin:$PATH"
+fi
+
+direnv allow .
 
 # install dependencies, requirements.txt created from poetry.lock file
 pip3 install -r requirements.txt
