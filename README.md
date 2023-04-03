@@ -1,7 +1,62 @@
-# NOTES
-## Setup
+# How To
+
+## Prerequisites - GCS
+
+1. You need to have a **gcloud account** and an **active project** with the following APIs enabled:
+    - Compute Engine API
+    - IAM Service Account Credentials API 
+    - BigQuery API
+    - Cloud Logging API ?
+    - Cloud Resource Manager API ?
+    - Service Usage API 
+    - Identity and Access Management (IAM) API ?
+
+2. You need to have a **ssh-key pair** generated for gcloud virtual machines:<br>-->  https://cloud.google.com/compute/docs/instances/ssh#gcloud
+
+3. Create an `.envrc` file in the projects' [root directory](./), copy-paste the following and replace the uppercase placeholders with your own information
+    ```bash
+    # For usage of spark
+    export JAVA_HOME="${HOME}/spark/jdk-17.0.2"
+    export PATH="${JAVA_HOME}/bin:${PATH}"
+    export SPARK_HOME="${HOME}/spark/spark-3.3.2-bin-hadoop3"
+    export PATH="${SPARK_HOME}/bin:${PATH}"
+    export PYTHONPATH="${SPARK_HOME}/python/:$PYTHONPATH"
+    export PYTHONPATH="${SPARK_HOME}/python/lib/py4j-0.10.9.5-src.zip:$PYTHONPATH"
+
+    # EDIT BEGIN 
+    # copy-paste from service account info file (json file)
+    export PROJECT_ID="<YOUR-PROJECT-ID>"
+    export KEY_ID="<YOUR-SERVICE-ACCOUNT-KEY-ID>"
+    export PRIVATE_KEY="-----BEGIN PRIVATE KEY-----<YOUR-SERVICE-ACCOUNT-PRIVATE-KEY>-----END PRIVATE KEY-----\n"
+    export SERVICE_ACCOUNT_EMAIL="<YOUR-SERVICE-ACCOUNT-EMAIL>"
+    export CLIENT_ID="<YOUR-CLIENT-ID>"
+    # EDIT END
+
+    # misceleanous, change to your preferences
+    export BUCKET_NAME="dwd-temp-daily" # name of the storage bucket
+    ```
+4. Create a `terraform.tfvars` in the [terraform folder](./terraform/), copy-paste the following and replace the uppercase placeholders with your own information
+    ```bash
+    username                  = "<YOUR-GCLOUD-ACCOUNT-USERNAME>"
+    project                   = "<YOUR-PROJECT-ID>"
+    region                    = "europe-west6"
+    zone                      = "europe-west6-a"
+    storage_class             = "STANDARD"
+    BQ_DATASET                = "temperatures"
+    data_lake_bucket          = "dwd_project"
+    terraform_service_account = "<YOUR-SERVICE-ACCOUNT-EMAIL>"
+    engine_private_key_file   = "~/.ssh/<YOUR-PRIVATE-GCLOUD-COMPUTE-SSH-KEY>"
+    ```
+## Prerequisites - Local
+ 1. Have this repo cloned 
+ 2. Have the following installed:
+    - Terraform
+
+# Setup
 
 ## Prefect
+
+#TODO: Add stuff from envrc to this part
 
 ### Blocks
 With GCS:
@@ -15,8 +70,8 @@ prefect block register -m prefect_gc
 
 ```bash
 prefect deployment build ./pipeline_web_to_gcs_bucket.py:etl_parent_flow \
--n "Github Storage Flow" \
--sb github/gh-dtc-storage/week7/ \
+--cron "*/1 * * * *"
+-n "Web to GCS Flow" \
 -o ./pipeline-deployment.yaml \
 --apply
 ```

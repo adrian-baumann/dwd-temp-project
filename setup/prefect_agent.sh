@@ -1,4 +1,3 @@
 #!/bin/bash
 # run prefect agent
-prefect agent start -q 'default'
-prefect server start
+tmux new-session -d -s prefect-agent-session 'prefect agent start -q 'default' '

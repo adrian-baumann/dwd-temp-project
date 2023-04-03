@@ -24,6 +24,16 @@ sudo apt install -y docker-ce
 sudo apt-get update
 sudo apt-get install docker-compose-plugin
 
+# Install direnv
+sudo apt-get update
+sudo apt-get install direnv
+eval "$(direnv hook bash)"
+
+# Install pip3
+sudo apt update
+sudo apt install python3-pip
+
+
 # -------------------------------------------------------------
 # ------------------------PROJECT------------------------------
 
@@ -31,31 +41,33 @@ sudo apt-get install docker-compose-plugin
 # Clone project repo
 git clone https://github.com/adrian-baumann/dwd-temp-project.git
 
-# change directory
+# change directory and direnv allow
 cd ./dwd-temp-project
+direnv allow
 
 # install dependencies, requirements.txt created from poetry.lock file
-pip install -r requirements.txt
+pip3 install -r requirements.txt
 
 # build prefect-gcp block for use in deployement
-python ./prefect_blocks.py
+python3 ./prefect_blocks.py
 
 # run prefect server and agent in the background
-source ./setup/prefect_server.sh &
-source ./setup/prefect_agent.sh &
+source ./setup/prefect_server.sh 
+source ./setup/prefect_agent.sh
 
 # configure server API
 prefect config set PREFECT_API_URL=http://127.0.0.1:4200/api
 
 # build and apply deployment
+# schedule to run this deployment at 04:00 in the morning every day
 prefect deployment build ./pipeline_web_to_gcs_bucket.py:etl_parent_flow \
---cron "*/1 * * * *"
+--cron "* 4 * * *"
 -n "Web to GCS Flow" \
 -o ./pipeline-deployment.yaml \
 --apply
 
 # run deployment
-python ./prefect_run.py
+python3 ./prefect_run.py
 
 # TODO: pre-commit hook for the following:
 # poetry export -f requirements.txt -o requirements.txt --without-hashes

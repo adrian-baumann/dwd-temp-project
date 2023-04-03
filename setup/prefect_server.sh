@@ -1,3 +1,3 @@
 #!/bin/bash
 # run prefect server
-prefect server start
+tmux new-session -d -s prefect-server-session 'prefect server start'
