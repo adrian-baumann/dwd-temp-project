@@ -7,22 +7,22 @@
 # -------------------------DOCKER------------------------------
 
 # Update the apt package index and install packages to allow apt to use a repository over HTTPS
-sudo apt update
-sudo apt install apt-transport-https ca-certificates curl software-properties-common
+# sudo apt update
+# sudo apt install apt-transport-https ca-certificates curl software-properties-common
 
-# Add Docker’s official GPG key
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add - 
+# # Add Docker’s official GPG key
+# curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add - 
 
-# The following command is to set up the stable repository
-sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu `lsb_release -cs` stable" 
+# # The following command is to set up the stable repository
+# sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu `lsb_release -cs` stable" 
 
-# Update the apt package index, and install the latest version of Docker Engine and container, or go to the next step to install a specific version
-sudo apt update 
-sudo apt install -y docker-ce
+# # Update the apt package index, and install the latest version of Docker Engine and container, or go to the next step to install a specific version
+# sudo apt update 
+# sudo apt install -y docker-ce
 
-# Install docker compose
-sudo apt-get update
-sudo apt-get install docker-compose-plugin
+# # Install docker compose
+# sudo apt-get update
+# sudo apt-get install docker-compose-plugin
 
 # Install direnv
 sudo apt-get update
@@ -49,13 +49,8 @@ mv ./.envrc ./dwd-temp-project/
 cd ./dwd-temp-project
 
 # Make sure your bin is in the PATH
-if [ -d "$HOME/.local/bin" ] ; then
-    PATH="$HOME/.local/bin:$PATH"
-fi
-
-if [ -d "$HOME/$USER/.local/bin" ] ; then
-    PATH="$HOME/$USER/.local/bin:$PATH"
-fi
+[[ ":$PATH:" != *":$HOME/.local/bin:"* ]] && PATH="$HOME/.local/bin:${PATH}"
+[[ ":$PATH:" != *":$HOME/$USER/.local/bin:"* ]] && PATH="$HOME/$USER/.local/bin:${PATH}"
 
 # Source envs
 source ./.envrc
