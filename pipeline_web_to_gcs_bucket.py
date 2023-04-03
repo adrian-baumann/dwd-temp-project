@@ -64,7 +64,7 @@ def download_files(url: str, link_and_category: list) -> None:
         with requests.get(file_url) as response:
             with open(str(file_path), mode) as file:
                 file.write(response.content)
-                sleep(0.5)
+                sleep(0.05)
     # TODO: add error handler for timeout with too many requests
 
 
