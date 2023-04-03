@@ -24,6 +24,11 @@ sudo apt install -y docker-ce
 sudo apt-get update
 sudo apt-get install docker-compose-plugin
 
+# Install direnv
+sudo apt-get update
+sudo apt-get install direnv
+eval "$(direnv hook bash)"
+
 # Install pip3
 sudo apt update
 sudo apt install python3-pip

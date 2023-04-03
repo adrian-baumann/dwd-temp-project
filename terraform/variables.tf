@@ -4,12 +4,6 @@ variable "username" {
   sensitive   = true
 }
 
-variable "terraform_service_account" {
-  description = "email of your service account"
-  type        = string
-  sensitive   = true
-}
-
 variable "engine_private_key_file" {
   description = "Private ssh key file for communicating with VMs in gcloud"
   type        = string

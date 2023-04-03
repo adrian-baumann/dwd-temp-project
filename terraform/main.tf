@@ -125,7 +125,7 @@ resource "google_compute_instance" "default" {
   }
 
   provisioner "file" {
-    content     = "export PROJECT_ID=${var.PROJECT_ID}\nexport KEY_ID=${var.KEY_ID}\nexport PRIVATE_KEY=${var.PRIVATE_KEY}\nexport SERVICE_ACCOUNT_EMAIL=${var.SERVICE_ACCOUNT_EMAIL}\nexport CLIENT_ID=${var.CLIENT_ID}"
+    content     = "export PROJECT_ID=\"${var.PROJECT_ID}\"\nexport KEY_ID=\"${var.KEY_ID}\"\nexport PRIVATE_KEY=\"${var.PRIVATE_KEY}\"\nexport SERVICE_ACCOUNT_EMAIL=\"${var.SERVICE_ACCOUNT_EMAIL}\"\nexport CLIENT_ID=\"${var.CLIENT_ID}\"\n"
     destination = "./.envrc"
 
     connection {
