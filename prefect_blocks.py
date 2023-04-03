@@ -35,7 +35,7 @@ def main() -> None:
       bucket=os.environ["BUCKET_NAME"],
       gcp_credentials=gcp_credentials,
   )
-  gcs_bucket.save(os.environ["GCS_BUCKET_BLOCK_NAME"], overwrite=True)
+  gcs_bucket.save("gcs-dtc-bucket", overwrite=True)
 
 if __name__ == "__main__":
   main()
