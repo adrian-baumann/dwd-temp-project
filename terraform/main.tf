@@ -11,7 +11,7 @@ terraform {
 
 provider "google" {
   alias   = "impersonation"
-  project = var.project
+  project = var.PROJECT_ID
   region  = var.region
 }
 
@@ -22,14 +22,14 @@ data "google_client_config" "default" {
 
 data "google_service_account_access_token" "default" {
   provider               = google.impersonation
-  target_service_account = var.terraform_service_account
+  target_service_account = var.SERVICE_ACCOUNT_EMAIL
   scopes                 = ["userinfo-email", "cloud-platform"]
   lifetime               = "1200s"
 }
 
 provider "google" {
   alias           = "impersonated"
-  project         = var.project
+  project         = var.PROJECT_ID
   region          = var.region
   access_token    = data.google_service_account_access_token.default.access_token
   request_timeout = "600s"
@@ -39,9 +39,9 @@ provider "google" {
 # Ref: https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/storage_bucket
 resource "google_storage_bucket" "data-lake-bucket" {
   provider      = google.impersonated
-  name          = "${var.data_lake_bucket}_${var.project}" # Concatenating DL bucket & Project name for unique naming
+  name          = "${var.data_lake_bucket}_${var.PROJECT_ID}" # Concatenating DL bucket & Project name for unique naming
   location      = var.region
-  project       = var.project
+  project       = var.PROJECT_ID
   force_destroy = true
 
   # Optional, but recommended settings:
@@ -71,7 +71,7 @@ resource "google_bigquery_dataset" "dataset" {
   description                = "Dataset for temperature data"
   delete_contents_on_destroy = true
   dataset_id                 = var.BQ_DATASET
-  project                    = var.project
+  project                    = var.PROJECT_ID
   location                   = var.region
 }
 
@@ -82,7 +82,7 @@ resource "google_compute_instance" "default" {
   description               = "Machine to run this projects code"
   name                      = "test"
   machine_type              = "e2-standard-4"
-  project                   = var.project
+  project                   = var.PROJECT_ID
   zone                      = var.zone
   allow_stopping_for_update = true
 
@@ -107,13 +107,26 @@ resource "google_compute_instance" "default" {
 
   service_account {
     # Google recommends custom service accounts that have cloud-platform scope and permissions granted via IAM Roles.
-    email  = var.terraform_service_account
+    email  = var.SERVICE_ACCOUNT_EMAIL
     scopes = ["cloud-platform"]
   }
 
   provisioner "file" {
     source      = "../setup/setup.sh"
     destination = "./setup.sh"
+
+    connection {
+      type        = "ssh"
+      user        = var.username
+      host        = google_compute_instance.default.network_interface.0.access_config.0.nat_ip
+      private_key = file("${var.engine_private_key_file}")
+      agent       = false
+    }
+  }
+
+  provisioner "file" {
+    content     = "export PROJECT_ID=${var.PROJECT_ID}\nexport KEY_ID=${var.KEY_ID}\nexport PRIVATE_KEY=${var.PRIVATE_KEY}\nexport SERVICE_ACCOUNT_EMAIL=${var.SERVICE_ACCOUNT_EMAIL}\nexport CLIENT_ID=${var.CLIENT_ID}"
+    destination = "./.envrc"
 
     connection {
       type        = "ssh"

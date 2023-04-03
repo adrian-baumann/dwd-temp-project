@@ -1,16 +1,19 @@
 variable "username" {
   description = "username of your gcloud account"
   type        = string
+  sensitive   = true
 }
 
 variable "terraform_service_account" {
   description = "email of your service account"
   type        = string
+  sensitive   = true
 }
 
 variable "engine_private_key_file" {
   description = "Private ssh key file for communicating with VMs in gcloud"
   type        = string
+  sensitive   = true
 }
 
 variable "data_lake_bucket" {
@@ -18,9 +21,34 @@ variable "data_lake_bucket" {
   type        = string
 }
 
-variable "project" {
+variable "PROJECT_ID" {
   description = "Your GCP Project ID"
   type        = string
+  sensitive   = true
+}
+
+variable "KEY_ID" {
+  description = "The key id of your service account private key"
+  type        = string
+  sensitive   = true
+}
+
+variable "PRIVATE_KEY" {
+  description = "The private key id of your service account"
+  type        = string
+  sensitive   = true
+}
+
+variable "SERVICE_ACCOUNT_EMAIL" {
+  description = "The service account email"
+  type        = string
+  sensitive   = true
+}
+
+variable "CLIENT_ID" {
+  description = "The client id of your service account"
+  type        = string
+  sensitive   = true
 }
 
 variable "region" {

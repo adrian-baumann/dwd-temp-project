@@ -24,11 +24,6 @@ sudo apt install -y docker-ce
 sudo apt-get update
 sudo apt-get install docker-compose-plugin
 
-# Install direnv
-sudo apt-get update
-sudo apt-get install direnv
-eval "$(direnv hook bash)"
-
 # Install pip3
 sudo apt update
 sudo apt install python3-pip
@@ -44,6 +39,7 @@ export BUCKET_NAME="dwd-temp-daily" # name of the storage bucket
 # Clone project repo
 git clone https://github.com/adrian-baumann/dwd-temp-project.git
 
+mv ./.envrc ./dwd-temp-project/ 
 # change directory and direnv allow
 cd ./dwd-temp-project
 direnv allow
@@ -51,6 +47,10 @@ direnv allow
 # install dependencies, requirements.txt created from poetry.lock file
 pip3 install -r requirements.txt
 
+# Make sure your bin is in the PATH
+if [ -d "$HOME/.local/bin" ] ; then
+    PATH="$HOME/.local/bin:$PATH"
+fi
 # build prefect-gcp block for use in deployement
 python3 ./prefect_blocks.py
 

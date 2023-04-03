@@ -6,6 +6,7 @@
     - Compute Engine API
     - IAM Service Account Credentials API 
     - BigQuery API
+    - Secret Manager API
     - Cloud Logging API ?
     - Cloud Resource Manager API ?
     - Service Usage API 
@@ -51,6 +52,7 @@
  1. Have this repo cloned 
  2. Have the following installed:
     - Terraform
+    - gcloud CLI
 
 # Setup
 
@@ -80,3 +82,17 @@ prefect deployment build ./pipeline_web_to_gcs_bucket.py:etl_parent_flow \
 `-sb`: storage block, refers to the created github block. Also, appending subfolders is possible \
 `-o` : output, location and filename \
 `--apply` : saves and updates deployment in prefect orion/cloud
+
+# Run everything
+
+1. Run terraform
+    ```bash
+    terraform apply
+    ```
+2. ssh to vm
+#TODO: add correct info below
+```bash
+gcloud compute ssh --zone "europe-west6-a" "test"  --project "dtc-de-zoomcamp-376519"
+```
+3. run `setup.sh` and accept everythingy
+    - if not executable, run `chmod +x setup.sh` and try again
