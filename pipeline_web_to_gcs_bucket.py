@@ -25,8 +25,6 @@ import gc
     version=os.getenv("GIT_COMMIT_SHA"),
     log_prints=True,
     retries=1,
-    cache_key_fn=task_input_hash,
-    cache_expiration=timedelta(days=1),
 )
 def get_file_links(url: str, category: str) -> list:
     """Get urls of files"""
@@ -47,8 +45,6 @@ def get_file_links(url: str, category: str) -> list:
     log_prints=True,
     retry_delay_seconds=20,
     retries=5,
-    cache_key_fn=task_input_hash,
-    cache_expiration=timedelta(days=1),
 )
 def download_files(url: str, link_and_category: list) -> None:
     """
@@ -78,8 +74,6 @@ def download_files(url: str, link_and_category: list) -> None:
     description="Unzips txt files from compressed files and saves them according to data type.",
     version=os.getenv("GIT_COMMIT_SHA"),
     log_prints=True,
-    cache_key_fn=task_input_hash,
-    cache_expiration=timedelta(days=1),
 )
 def unzip(category: str) -> None:
     """
@@ -123,8 +117,6 @@ def unzip(category: str) -> None:
     description="Loads DataFrames from .txt-files into memory.",
     version=os.getenv("GIT_COMMIT_SHA"),
     log_prints=True,
-    cache_key_fn=task_input_hash,
-    cache_expiration=timedelta(days=1),
 )
 def fetch_dataset(df_name: str) -> (pd.DataFrame, str()):
     """Reads in datasets by creating lists of small dataframes and concatenating them"""
