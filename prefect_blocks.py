@@ -25,7 +25,7 @@ def main() -> None:
 
   GcpCredentials(
       service_account_info=service_account_info
-  ).save("gcp-credentials-block")
+  ).save("gcp-credentials-block", overwrite=True)
 
   gcp_credentials = GcpCredentials.load("gcp-credentials-block")
 
