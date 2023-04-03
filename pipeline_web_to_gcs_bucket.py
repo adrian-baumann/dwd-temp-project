@@ -64,7 +64,6 @@ def download_files(url: str, link_and_category: list) -> None:
         with requests.get(file_url) as response:
             with open(str(file_path), mode) as file:
                 file.write(response.content)
-                sleep(0.05)
     # TODO: add error handler for timeout with too many requests
 
 
@@ -332,8 +331,9 @@ def etl_web_to_local(category: str) -> Path:
 
     # Downloading starts here
     for count, link_and_category in enumerate(links_and_categories):
-        download_files.submit(url, link_and_category)
+        download_files(url, link_and_category)
         print(f"downloads finished: {count}/{num_links}")
+    unzip(category)
 
 
 @flow(
@@ -381,7 +381,6 @@ def etl_parent_flow(
     if download_data:
         for category in dataset_categories:
             etl_web_to_local(category)
-            unzip(category)
     for df_name in df_names:
         paths.append(etl_transform_write(df_name))
     for path in paths:
