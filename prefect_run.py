@@ -2,7 +2,7 @@ from prefect.deployments import run_deployment
 
 
 def main():
-    response = run_deployment(name="ETL_Parent_Flow/Github Storage Flow")
+    response = run_deployment(name="ETL_Parent_Flow/Web to GCS Flow")
     print(response)
 
 
