@@ -4,7 +4,7 @@
 name: Web to GCS Flow
 description: Creates flows handling the download, unpacking, transforming, saving
   and uploading.
-version: 4d204537bf7ea08b133c15d036434c38
+version: f5c75cb5afc03fa6cf172c18f666f35c
 # The work queue that will handle this deployment's runs
 work_queue_name: default
 work_pool_name: default-agent-pool
@@ -29,10 +29,10 @@ infrastructure:
   name: null
   command: null
   stream_output: true
-  working_dir: null
-  _block_document_id: 856f5a1f-05f1-4a39-a81e-50d448c7d893
-  _block_document_name: anonymous-3cfaad82-00bc-4e03-a3b8-ba855542175f
-  _is_anonymous: true
+  working_dir: /home/adrian/dtc-de-course/src/dwd-temp-project
+  _block_document_id: 72e88905-98b3-48fb-9560-857214fbfc37
+  _block_document_name: local-storage-block
+  _is_anonymous: false
   block_type_slug: process
   _block_type_slug: process
 storage: null
@@ -68,4 +68,4 @@ parameter_openapi_schema:
       type: boolean
   required: null
   definitions: null
-timestamp: '2023-04-03T17:47:12.081820+00:00'
+timestamp: '2023-04-04T10:29:10.821092+00:00'

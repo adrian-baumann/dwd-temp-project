@@ -74,6 +74,7 @@ prefect config set PREFECT_API_URL=http://127.0.0.1:4200/api
 prefect deployment build ./pipeline_web_to_gcs_bucket.py:etl_parent_flow \
 --cron "0 4 * * *" \
 --timezone 'Europe/Berlin' \
+-ib process/local-storage-block \
 -n "Web to GCS Flow" \
 -o ./pipeline-deployment.yaml \
 --apply

@@ -99,6 +99,8 @@ resource "google_compute_instance" "default" {
 
   network_interface {
     network = "default"
+    project = var.PROJECT_ID
+    zone = var.zone
 
     access_config {
       //Ephemeral IP

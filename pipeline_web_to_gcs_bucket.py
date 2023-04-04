@@ -46,16 +46,13 @@ def get_file_links(url: str, category: str) -> list:
     retry_delay_seconds=20,
     retries=5,
 )
-def download_files(url: str, link_and_category: list) -> None:
+def download_files(url: str, link_and_category: list, save_path: str) -> None:
     """
     Download daily mean of the observed air temperatures at 2m height above ground from DWD (German Meteorological Service).
     Loading can take some time as it is intentionally slowed down to decrease load on opendata server.
     """
 
     link, category = link_and_category
-
-    save_path = Path(f"./data/{category}/download")
-    save_path.mkdir(parents=True, exist_ok=True)
 
     file_path = save_path / link["href"]
     mode = "w+b" if "pdf" or "zip" in link["href"] else "w+"
@@ -329,9 +326,12 @@ def etl_web_to_local(category: str) -> Path:
     links_and_categories = get_file_links(url, category)
     num_links = len(links_and_categories)
 
+    save_path = Path(f"./data/{category}/download")
+    save_path.mkdir(parents=True, exist_ok=True)
+
     # Downloading starts here
     for count, link_and_category in enumerate(links_and_categories):
-        download_files(url, link_and_category)
+        download_files(url, link_and_category, save_path)
         print(f"downloads finished: {count}/{num_links}")
     unzip(category)
 
@@ -378,6 +378,7 @@ def etl_parent_flow(
     download_data: bool = False,
 ) -> None:
     paths = []
+
     if download_data:
         for category in dataset_categories:
             etl_web_to_local(category)
