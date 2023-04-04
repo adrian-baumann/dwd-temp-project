@@ -56,12 +56,14 @@ def download_files(url: str, link_and_category: list, save_path: str) -> None:
 
     file_path = save_path / link["href"]
     mode = "w+b" if "pdf" or "zip" in link["href"] else "w+"
-    file_url = url + link["href"]
+    file_url = url + f"{category}/" + link["href"]
+    print(file_url)
     if not file_path.is_file():
         with requests.get(file_url) as response:
             with open(str(file_path), mode) as file:
                 file.write(response.content)
     # TODO: add error handler for timeout with too many requests
+    # TODO: add multithreading for prefect flows
 
 
 @task(
