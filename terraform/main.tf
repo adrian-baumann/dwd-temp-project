@@ -39,7 +39,7 @@ provider "google" {
 # Ref: https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/storage_bucket
 resource "google_storage_bucket" "data-lake-bucket" {
   provider      = google.impersonated
-  name          = "${var.data_lake_bucket}_${var.PROJECT_ID}" # Concatenating DL bucket & Project name for unique naming
+  name          = "${var.data_lake_bucket}"
   location      = var.region
   project       = var.PROJECT_ID
   force_destroy = true
@@ -99,8 +99,6 @@ resource "google_compute_instance" "default" {
 
   network_interface {
     network = "default"
-    project = var.PROJECT_ID
-    zone = var.zone
 
     access_config {
       //Ephemeral IP

@@ -94,5 +94,16 @@ prefect deployment build ./pipeline_web_to_gcs_bucket.py:etl_parent_flow \
 ```bash
 gcloud compute ssh --zone "europe-west6-a" "test"  --project "dtc-de-zoomcamp-376519"
 ```
-3. run `setup.sh` and accept everythingy
-    - if not executable, run `chmod +x setup.sh` and try again
+3. Run `setup.sh` and accept everything. If not executable, run `chmod +x setup.sh` and try again.<br>This script will run about 15-20 mins and will
+    1. download and install direnv and pip3
+    2. clone the project repo
+    3. download python packages via requirements.txt
+    4. set prefect blocks
+    5. start up prefect agent and server in their own tmux terminals
+    6. run a prefect deployment build/apply to update the deployment yaml
+    7. run the deployment, which will:  
+
+### The prefect deployment
+This script will
+    1. download data onto your vm
+    2. 
