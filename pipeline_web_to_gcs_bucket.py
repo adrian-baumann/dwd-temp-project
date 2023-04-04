@@ -115,6 +115,8 @@ def unzip(category: str) -> None:
     description="Loads DataFrames from .txt-files into memory.",
     version=os.getenv("GIT_COMMIT_SHA"),
     log_prints=True,
+    # cache_key_fn=task_input_hash,
+    # cache_expiration=timedelta(seconds=30),
 )
 def fetch_dataset(df_name: str) -> (pd.DataFrame, str()):
     """Reads in datasets by creating lists of small dataframes and concatenating them"""
@@ -251,8 +253,8 @@ def fetch_dataset(df_name: str) -> (pd.DataFrame, str()):
     description="Transforms dates to correct format and other small changes.",
     version=os.getenv("GIT_COMMIT_SHA"),
     log_prints=True,
-    cache_key_fn=task_input_hash,
-    cache_expiration=timedelta(days=1),
+    # cache_key_fn=task_input_hash,
+    # cache_expiration=timedelta(seconds=30),
 )
 def transform(df: pd.DataFrame, df_name: str) -> pd.DataFrame:
     """Fix dtype issues"""
@@ -261,6 +263,7 @@ def transform(df: pd.DataFrame, df_name: str) -> pd.DataFrame:
         df["MESS_DATUM"] = pd.to_datetime(
             df["MESS_DATUM"], format="%Y%m%d", errors="coerce", utc=False
         ).dt.tz_localize("Europe/Brussels", ambiguous="NaT", nonexistent="NaT")
+        df["year"] = df["MESS_DATUM"].dt.strftime("%Y")
     if df_name == "metadata_geo":
         df["Stations_id"] = df["Stations_id"].str.replace(" ", "")
         df["von_datum"] = pd.to_datetime(
@@ -285,18 +288,23 @@ def transform(df: pd.DataFrame, df_name: str) -> pd.DataFrame:
 
 @task(
     name="Write-to-Local",
-    task_run_name="save-{df_name}-dataframe-as-parquet",
-    description="Write DataFrame out locally as parquet file.",
+    task_run_name="save-{df_name}-dataframe-locally",
+    description="Write DataFrame out locally as partitioned parquet file or csv.",
     version=os.getenv("GIT_COMMIT_SHA"),
     log_prints=True,
-    cache_key_fn=task_input_hash,
-    cache_expiration=timedelta(days=1),
+    # cache_key_fn=task_input_hash,
+    # cache_expiration=timedelta(seconds=30),
 )
 def write_local(df: pd.DataFrame, df_name: str) -> Path:
     """Write DataFrame out locally as parquet file"""
-    path = Path(f"./data/parquet/{df_name}.parquet")
-    path.parent.mkdir(parents=True, exist_ok=True)
-    df.to_parquet(path, compression="gzip")
+    if df_name == "main":
+        path = Path(f"./data/final/{df_name}/")
+        path.parent.mkdir(parents=True, exist_ok=True)
+        df.to_parquet(path, partition_cols=["year"], compression="gzip")
+    else:
+        path = Path(f"./data/final/{df_name}.csv")
+        path.parent.mkdir(parents=True, exist_ok=True)
+        df.to_csv(path)
     return path
 
 
@@ -310,8 +318,12 @@ def write_local(df: pd.DataFrame, df_name: str) -> Path:
 )
 def write_gcs(path: Path) -> None:
     """Upload local parquet file using `path` object to GCS"""
-    gcs_block = GcsBucket.load("gcs-dtc-bucket")
-    gcs_block.upload_from_path(from_path=path, to_path=path, timeout=600)
+    gcs_bucket = GcsBucket.load("gcs-dtc-bucket")
+    to_path = Path("data/")
+    if path.name == "main":
+        gcs_bucket.put_directory(local_path=path, to_path=path)
+    else:
+        gcs_bucket.upload_from_path(from_path=path, to_path=path, timeout=600)
     return
 
 

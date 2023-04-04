@@ -33,6 +33,8 @@ eval "$(direnv hook bash)"
 sudo apt update
 sudo apt install python3-pip
 
+/home/adrian/dtc-de-course/src/dwd-temp-project/dwd_project
+
 
 # -------------------------------------------------------------
 # ------------------------PROJECT------------------------------
