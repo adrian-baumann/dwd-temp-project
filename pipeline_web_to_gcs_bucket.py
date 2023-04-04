@@ -304,7 +304,7 @@ def write_local(df: pd.DataFrame, df_name: str) -> Path:
     else:
         path = Path(f"./data/final/{df_name}.csv")
         path.parent.mkdir(parents=True, exist_ok=True)
-        df.to_csv(path)
+        df.to_csv(path, header=True)
     return path
 
 
