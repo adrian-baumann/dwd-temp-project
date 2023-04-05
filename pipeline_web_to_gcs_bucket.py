@@ -429,12 +429,13 @@ def etl_parent_flow(
     try:
         for path in paths:
             etl_local_to_gcs(path)
-        etl_bigquery_load_cloud_storage_flow()
     except OSError:
         print(f"Connection Timeout. Try uploading manually.\nFile: {path.name}")
 
     else:
         print("parameter is missing")
+
+    etl_bigquery_load_cloud_storage_flow()
 
 
 if __name__ == "__main__":
