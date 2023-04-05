@@ -5,19 +5,13 @@ import pandas as pd
 import pyarrow as pa
 from prefect import flow, task
 from prefect_gcp.cloud_storage import GcsBucket, GcpCredentials
-
 from google.cloud import bigquery
-from random import randint
 from prefect.tasks import task_input_hash
 from datetime import timedelta
 
-from time import sleep
-import itertools
 import requests
 from bs4 import BeautifulSoup
 from zipfile import ZipFile
-
-import gc
 
 
 @task(
@@ -261,6 +255,7 @@ def transform(df: pd.DataFrame, df_name: str) -> pd.DataFrame:
             df["MESS_DATUM"], format="%Y%m%d", errors="coerce", utc=False
         ).dt.tz_localize("Europe/Brussels", ambiguous="NaT", nonexistent="NaT")
         df["year"] = df["MESS_DATUM"].dt.strftime("%Y")
+        df["STATIONS_ID"] = df["STATIONS_ID"].str.replace(" ", "")
         df = df.sort_values(by=["MESS_DATUM"], ascending=True)
     if df_name == "metadata_geo":
         df["Stations_id"] = df["Stations_id"].str.replace(" ", "")
