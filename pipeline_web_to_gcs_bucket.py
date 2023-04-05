@@ -383,10 +383,13 @@ def etl_local_to_gcs(path: Path) -> None:
 )
 def etl_bigquery_load_cloud_storage_flow() -> None:
     gcp_credentials = GcpCredentials.load("gcp-credentials-block")
+    dataset = os.environ["DATASET_NAME"]
+    table = f"{dataset}_all"
+    uri = "gs://dwd_project/data/final/main/*"
     bigquery.bigquery_load_cloud_storage(
-        dataset=os.getenv("DATASET_NAME"),
-        table=f"{dataset}_all",
-        uri="gs://dwd_project/data/final/main/*",
+        dataset=dataset,
+        table=table,
+        uri=uri,
         job_config={
             "autodetect": True,
             "schema": [
