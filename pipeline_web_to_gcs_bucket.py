@@ -401,6 +401,7 @@ def etl_bigquery_load_cloud_storage_flow() -> None:
 
     table_id = f"{project_id}.{dataset}.{table}"
     job_config = bigquery.LoadJobConfig(
+        clustering_fields=["mess_datum"],
         hive_partitioning=hive_partitioning_opts,
         time_partitioning=time_partitioning_opts,
         write_disposition=bigquery.WriteDisposition.WRITE_TRUNCATE,
