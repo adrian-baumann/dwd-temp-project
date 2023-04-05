@@ -42,6 +42,7 @@ sudo apt install python3-pip
 # some env vars
 export BUCKET_NAME="dwd_project" # name of the storage bucket
 export DATASET_NAME="temperatures" # name of the BigQuery Dataset
+export DATASET_LOCATION="europe-west6" # dataset location in BigQuery
 
 
 # Clone project repo
