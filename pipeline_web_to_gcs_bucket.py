@@ -401,7 +401,7 @@ def etl_bigquery_load_cloud_storage_flow() -> None:
             "encoding": "ISO-8859-1",
             "hivePartitioningOptions": {
                 "mode": "AUTO",
-                "sourceUriPrefix": "gs://dwd_project/data/final/main/year=1781/",
+                "sourceUriPrefix": "gs://dwd_project/data/final/main/*",
             },
             "sourceFormat": "PARQUET",
         },
