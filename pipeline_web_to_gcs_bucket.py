@@ -391,6 +391,10 @@ def etl_bigquery_load_cloud_storage_flow() -> None:
 
     client = bigquery.Client()
 
+    time_partitioning_opts = bigquery.TimePartitioning()
+    time_partitioning_opts.type_ = "MONTH"
+    time_partitioning_opts.field = "mess_datum"
+
     hive_partitioning_opts = bigquery.HivePartitioningOptions()
     hive_partitioning_opts.mode = "AUTO"
     hive_partitioning_opts.source_uri_prefix = "gs://dwd_project/data/final/main/"
@@ -398,6 +402,7 @@ def etl_bigquery_load_cloud_storage_flow() -> None:
     table_id = f"{project_id}.{dataset}.{table}"
     job_config = bigquery.LoadJobConfig(
         hive_partitioning=hive_partitioning_opts,
+        timePartitioning=time_partitioning_opts,
         write_disposition=bigquery.WriteDisposition.WRITE_TRUNCATE,
         source_format=bigquery.SourceFormat.PARQUET,
     )
