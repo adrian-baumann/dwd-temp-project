@@ -418,19 +418,19 @@ def etl_parent_flow(
     df_names: list[str] = ["main", "metadata_geo", "metadata_operator"],
     download_data: bool = False,
 ) -> None:
-    # paths = []
+    paths = []
 
-    # if download_data:
-    #     for category in dataset_categories:
-    #         etl_web_to_local(category)
-    # for df_name in df_names:
-    #     paths.append(etl_transform_write(df_name))
+    if download_data:
+        for category in dataset_categories:
+            etl_web_to_local(category)
+    for df_name in df_names:
+        paths.append(etl_transform_write(df_name))
 
-    # try:
-    #     for path in paths:
-    #         etl_local_to_gcs(path)
-    # except OSError:
-    #     print(f"Connection Timeout. Try uploading manually.\nFile: {path.name}")
+    try:
+        for path in paths:
+            etl_local_to_gcs(path)
+    except OSError:
+        print(f"Connection Timeout. Try uploading manually.\nFile: {path.name}")
 
     etl_bigquery_load_cloud_storage_flow()
 
