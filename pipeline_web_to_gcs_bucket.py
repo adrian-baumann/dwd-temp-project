@@ -23,7 +23,6 @@ import gc
     name="Get-File_links",
     task_run_name="Get-{category}-files",
     description="Returns links to files from endpoint of the DWD Opendata website.",
-    version=os.environ["GIT_COMMIT_SHA"],
     log_prints=True,
     retries=1,
 )
@@ -42,7 +41,6 @@ def get_file_links(url: str, category: str) -> list:
     name="Download-Files",
     task_run_name="download-{link_and_category[1]}-files",
     description="Downloads compressed files from two endpoints of the DWD Opendata website.",
-    version=os.environ["GIT_COMMIT_SHA"],
     log_prints=True,
     retry_delay_seconds=20,
     retries=5,
@@ -71,7 +69,6 @@ def download_files(url: str, link_and_category: list, save_path: str) -> None:
     name="Unzip-Files",
     task_run_name="unzip-{category}-files",
     description="Unzips txt files from compressed files and saves them according to data type.",
-    version=os.environ["GIT_COMMIT_SHA"],
     log_prints=True,
 )
 def unzip(category: str) -> None:
@@ -114,7 +111,6 @@ def unzip(category: str) -> None:
     name="Fetch-Datasets",
     task_run_name="load-{df_name}-dataset",
     description="Loads DataFrames from .txt-files into memory.",
-    version=os.environ["GIT_COMMIT_SHA"],
     log_prints=True,
     # cache_key_fn=task_input_hash,
     # cache_expiration=timedelta(seconds=30),
@@ -252,7 +248,6 @@ def fetch_dataset(df_name: str) -> (pd.DataFrame, str()):
     name="Transform",
     task_run_name="transform-{df_name}-dataframe",
     description="Transforms dates to correct format and other small changes.",
-    version=os.environ["GIT_COMMIT_SHA"],
     log_prints=True,
     # cache_key_fn=task_input_hash,
     # cache_expiration=timedelta(seconds=30),
@@ -292,7 +287,6 @@ def transform(df: pd.DataFrame, df_name: str) -> pd.DataFrame:
     name="Write-to-Local",
     task_run_name="save-{df_name}-dataframe-locally",
     description="Write DataFrame out locally as partitioned parquet file or csv.",
-    version=os.environ["GIT_COMMIT_SHA"],
     log_prints=True,
     # cache_key_fn=task_input_hash,
     # cache_expiration=timedelta(seconds=30),
@@ -314,7 +308,6 @@ def write_local(df: pd.DataFrame, df_name: str) -> Path:
     name="Write-to-GCS",
     task_run_name="upload-{path}",
     description="Writes local data to Google Cloud Storage using the GCSBucket Block.",
-    version=os.environ["GIT_COMMIT_SHA"],
     log_prints=True,
     timeout_seconds=600,
 )
@@ -337,7 +330,6 @@ def write_gcs(path: Path) -> None:
     name="ETL_Web-to-Local",
     flow_run_name="download-{category}-files",
     description="Downloads and unzips files from DWD Opendata website.",
-    version=os.environ["GIT_COMMIT_SHA"],
     log_prints=True,
 )
 def etl_web_to_local(category: str) -> Path:
@@ -360,7 +352,6 @@ def etl_web_to_local(category: str) -> Path:
     name="ETL_Transform_Write",
     flow_run_name="transform-{df_name}-dataset",
     description="Transforms and saves dataset to parquet-file.",
-    version=os.environ["GIT_COMMIT_SHA"],
     log_prints=True,
 )
 def etl_transform_write(df_name: str) -> Path:
@@ -377,7 +368,6 @@ def etl_transform_write(df_name: str) -> Path:
     name="ETL_Local_to_GCloud_Storage",
     flow_run_name="upload-to-{path}",
     description="Writes local data to Google Cloud Storage using the GCSBucket Block.",
-    version=os.environ["GIT_COMMIT_SHA"],
     log_prints=True,
 )
 def etl_local_to_gcs(path: Path) -> None:
@@ -389,7 +379,6 @@ def etl_local_to_gcs(path: Path) -> None:
     name="ETL_GCloud_Storage_to_BQ",
     flow_run_name="load-into-bq",
     description="Loads GCloud storage data into BigQuery dataset .",
-    version=os.environ["GIT_COMMIT_SHA"],
     log_prints=True,
 )
 def etl_bigquery_load_cloud_storage_flow() -> None:
@@ -425,7 +414,6 @@ def etl_bigquery_load_cloud_storage_flow() -> None:
     name="ETL_Parent_Flow",
     flow_run_name="orchestrate-child-flows",
     description="Creates flows handling the download, unpacking, transforming, saving and uploading.",
-    version=os.environ["GIT_COMMIT_SHA"],
     log_prints=True,
 )
 def etl_parent_flow(
