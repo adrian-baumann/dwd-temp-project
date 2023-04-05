@@ -296,7 +296,11 @@ def write_local(df: pd.DataFrame, df_name: str) -> Path:
     if df_name == "main":
         path = Path(f"./data/final/{df_name}/")
         path.parent.mkdir(parents=True, exist_ok=True)
-        df.to_parquet(path, partition_cols=["year"], compression="gzip")
+        df.to_parquet(
+            path,
+            partition_cols=["year"],
+            compression="gzip",
+        )
     else:
         path = Path(f"./data/final/{df_name}.csv")
         path.parent.mkdir(parents=True, exist_ok=True)
@@ -393,8 +397,13 @@ def etl_bigquery_load_cloud_storage_flow() -> None:
         uri=uri,
         location=location,
         job_config={
-            "autodetect": True,
+            "sourceUris": [uri],
             "encoding": "ISO-8859-1",
+            "hivePartitioningOptions": {
+                "mode": "AUTO",
+                "sourceUriPrefix": "gs://dwd_project/data/final/main/year=1781/",
+            },
+            "sourceFormat": "PARQUET",
         },
         gcp_credentials=gcp_credentials,
     )
