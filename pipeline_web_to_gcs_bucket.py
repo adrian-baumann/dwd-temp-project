@@ -6,8 +6,7 @@ import pyarrow as pa
 from prefect import flow, task
 from prefect_gcp.cloud_storage import GcsBucket, GcpCredentials
 
-from prefect_gcp import bigquery
-from google.cloud.bigquery import HivePartitioningOptions, LoadJobConfig
+from google.cloud import bigquery
 from random import randint
 from prefect.tasks import task_input_hash
 from datetime import timedelta
@@ -389,18 +388,29 @@ def etl_local_to_gcs(path: Path) -> None:
 )
 def etl_bigquery_load_cloud_storage_flow() -> None:
     gcp_credentials = GcpCredentials.load("gcp-credentials-block")
+    project_id = os.environ["PROJECT_ID"]
     dataset = os.environ["DATASET_NAME"]
     location = os.environ["DATASET_LOCATION"]
     table = f"{dataset}_all"
     uri = "gs://dwd_project/data/final/main/*"
+    hive_partitioning_opts = HivePartitioningOptions()
+    hive_partitioning_opts.mode = "AUTO"
+    hive_partitioning_opts.require_partition_filter = True
+    hive_partitioning_opts.source_uri_prefix = "gs://dwd_project/data/final/main/"
 
-    bigquery.bigquery_load_cloud_storage(
-        dataset=dataset,
-        table=table,
-        uri=uri,
-        location=location,
-        gcp_credentials=gcp_credentials,
+    # Construct a BigQuery client object.
+    client = bigquery.Client()
+    # TODO(developer): Set table_id to the ID of the table to create.
+    table_id = f"{project_id}.{dataset}.{table}"
+    job_config = bigquery.LoadJobConfig(
+        hivePartitioningOptions=hive_partitioning_opts,
+        write_disposition=bigquery.WriteDisposition.WRITE_TRUNCATE,
+        source_format=bigquery.SourceFormat.PARQUET,
     )
+    load_job = client.load_table_from_uri(
+        uri, table_id, job_config=job_config
+    )  # Make an API request.
+    load_job.result()  # Waits for the job to complete.
 
 
 @flow(
