@@ -6,7 +6,7 @@ import pyarrow as pa
 from prefect import flow, task
 from prefect_gcp.cloud_storage import GcsBucket, GcpCredentials
 from prefect_gcp import bigquery
-from google_cloud_bigquery import HivePartitioningOptions
+from google.cloud.bigquery import HivePartitioningOptions
 from random import randint
 from prefect.tasks import task_input_hash
 from datetime import timedelta
