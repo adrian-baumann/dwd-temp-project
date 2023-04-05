@@ -395,7 +395,6 @@ def etl_bigquery_load_cloud_storage_flow() -> None:
     uri = "gs://dwd_project/data/final/main/*"
     hive_partitioning_opts = bigquery.HivePartitioningOptions()
     hive_partitioning_opts.mode = "AUTO"
-    hive_partitioning_opts.require_partition_filter = True
     hive_partitioning_opts.source_uri_prefix = "gs://dwd_project/data/final/main/"
 
     # Construct a BigQuery client object.
