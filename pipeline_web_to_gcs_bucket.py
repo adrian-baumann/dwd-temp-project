@@ -403,7 +403,7 @@ def etl_bigquery_load_cloud_storage_flow() -> None:
     # TODO(developer): Set table_id to the ID of the table to create.
     table_id = f"{project_id}.{dataset}.{table}"
     job_config = bigquery.LoadJobConfig(
-        hivePartitioningOptions=hive_partitioning_opts,
+        hive_partitioning=hive_partitioning_opts,
         write_disposition=bigquery.WriteDisposition.WRITE_TRUNCATE,
         source_format=bigquery.SourceFormat.PARQUET,
     )
