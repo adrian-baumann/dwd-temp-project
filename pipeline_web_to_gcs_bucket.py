@@ -393,22 +393,12 @@ def etl_bigquery_load_cloud_storage_flow() -> None:
     location = os.environ["DATASET_LOCATION"]
     table = f"{dataset}_all"
     uri = "gs://dwd_project/data/final/main/*"
-    hive_partitioning_opts = HivePartitioningOptions()
-    hive_partitioning_opts.mode = "AUTO"
-    hive_partitioning_opts.require_partition_filter = True
-    hive_partitioning_opts.source_uri_prefix = "gs://dwd_project/data/final/main/"
 
-    job_config = LoadJobConfig(
-        hivePartitioningOptions=hive_partitioning_opts,
-        sourceFormat="PARQUET",
-        encoding="ISO-8859-1",
-    )
     bigquery.bigquery_load_cloud_storage(
         dataset=dataset,
         table=table,
         uri=uri,
         location=location,
-        job_config=job_config,
         gcp_credentials=gcp_credentials,
     )
 
