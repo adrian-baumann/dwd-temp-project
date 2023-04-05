@@ -397,7 +397,6 @@ def etl_bigquery_load_cloud_storage_flow() -> None:
         uri=uri,
         location=location,
         job_config={
-            "sourceUris": [uri],
             "encoding": "ISO-8859-1",
             "hivePartitioningOptions": {
                 "mode": "AUTO",
