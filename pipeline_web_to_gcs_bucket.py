@@ -5,7 +5,7 @@ import pandas as pd
 import pyarrow as pa
 from prefect import flow, task
 from prefect_gcp.cloud_storage import GcsBucket, GcpCredentials
-import prefect_gcp.bigquery
+from prefect_gcp import bigquery
 from random import randint
 from prefect.tasks import task_input_hash
 from datetime import timedelta
