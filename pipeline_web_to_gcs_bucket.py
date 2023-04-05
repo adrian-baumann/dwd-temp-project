@@ -391,7 +391,7 @@ def etl_bigquery_load_cloud_storage_flow() -> None:
         dataset=dataset,
         table=table,
         uri=uri,
-        location=
+        location=location,
         job_config={
             "autodetect": True,
         },
