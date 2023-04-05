@@ -398,7 +398,7 @@ def etl_bigquery_load_cloud_storage_flow() -> None:
         location=location,
         job_config={
             "encoding": "ISO-8859-1",
-            "hivePartitioningOptions": {
+            "hive_partitioning": {
                 "mode": "AUTO",
                 "sourceUris": "gs://dwd_project/data/final/main/",
             },
