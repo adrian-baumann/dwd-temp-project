@@ -3,7 +3,7 @@ from prefect.deployments import run_deployment
 
 def main():
     response = run_deployment(
-        name="ETL_Parent_Flow/Web to GCS Flow", parameters={"download_data": True}
+        name="ETL_Parent_Flow/Web to GCS Flow", parameters={"download_data": False}
     )
     print(response)
 
