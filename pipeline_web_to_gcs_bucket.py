@@ -5,7 +5,7 @@ import pandas as pd
 import pyarrow as pa
 from prefect import flow, task
 from prefect_gcp.cloud_storage import GcsBucket
-from prefect_gcp.bigquery import bigquery_load_cloud_storage
+import prefect_gcp.bigquery
 from random import randint
 from prefect.tasks import task_input_hash
 from datetime import timedelta
@@ -394,10 +394,29 @@ def etl_local_to_gcs(path: Path) -> None:
 )
 def etl_bigquery_load_cloud_storage_flow() -> None:
     gcp_credentials = GcpCredentials.load("gcp-credentials-block")
-    bigquery_load_cloud_storage(
+    bigquery.bigquery_load_cloud_storage(
         dataset=os.environ["DATASET_NAME"],
         table="temperatures_all",
         uri="gs://dwd_project/data/final/main/*",
+        job_config={
+            "autodetect": True,
+            "schema": [
+                bigquery.SchemaField("stations_id", "STRING", mode="REQUIRED"),
+                bigquery.SchemaField("mess_datum", "STRING", mode="NULLABLE"),
+                bigquery.SchemaField("qn_3", "INT", mode="NULLABLE"),
+                bigquery.SchemaField("qn_4", "INT", mode="NULLABLE"),
+                bigquery.SchemaField("rsk", "FLOAT", mode="NULLABLE"),
+                bigquery.SchemaField("rskf", "INT", mode="NULLABLE"),
+                bigquery.SchemaField("shk_tag", "INT", mode="NULLABLE"),
+                bigquery.SchemaField("nm", "STRING", mode="NULLABLE"),
+                bigquery.SchemaField("tmk", "FLOAT", mode="NULLABLE"),
+                bigquery.SchemaField("upm", "FLOAT", mode="NULLABLE"),
+                bigquery.SchemaField("txk", "FLOAT", mode="NULLABLE"),
+                bigquery.SchemaField("tnk", "FLOAT", mode="NULLABLE"),
+                bigquery.SchemaField("tgk", "FLOAT", mode="NULLABLE"),
+                bigquery.SchemaField("year", "INT", mode="NULLABLE"),
+            ],
+        },
         gcp_credentials=gcp_credentials,
     )
 
