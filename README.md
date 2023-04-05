@@ -58,7 +58,8 @@
 
 ## Prefect
 
-#TODO: Add stuff from envrc to this part
+TODO: Add stuff from envrc to this part
+TODO: need to programmatically change zone in .dbt/profiles.yaml
 
 ### Blocks
 With GCS:
