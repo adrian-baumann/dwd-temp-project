@@ -41,6 +41,7 @@ sudo apt install python3-pip
 
 # some env vars
 export BUCKET_NAME="dwd_project" # name of the storage bucket
+export DATASET_NAME="temperatures" # name of the BigQuery Dataset
 
 
 # Clone project repo
@@ -66,6 +67,7 @@ direnv allow
 NOW=$(date +"%H:%M:%S")
 echo -e "${Color}$NOW  --  Installing python3 dependencies.${Color_Off}"
 pip3 install -r requirements.txt
+prefect block register -m prefect_gcp
 
 # build prefect-gcp block for use in deployement
 NOW=$(date +"%H:%M:%S")

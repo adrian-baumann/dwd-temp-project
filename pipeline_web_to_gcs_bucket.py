@@ -5,6 +5,7 @@ import pandas as pd
 import pyarrow as pa
 from prefect import flow, task
 from prefect_gcp.cloud_storage import GcsBucket
+from prefect_gcp.bigquery import bigquery_load_cloud_storage
 from random import randint
 from prefect.tasks import task_input_hash
 from datetime import timedelta
@@ -22,7 +23,7 @@ import gc
     name="Get-File_links",
     task_run_name="Get-{category}-files",
     description="Returns links to files from endpoint of the DWD Opendata website.",
-    version=os.getenv("GIT_COMMIT_SHA"),
+    version=os.environ["GIT_COMMIT_SHA"],
     log_prints=True,
     retries=1,
 )
@@ -41,7 +42,7 @@ def get_file_links(url: str, category: str) -> list:
     name="Download-Files",
     task_run_name="download-{link_and_category[1]}-files",
     description="Downloads compressed files from two endpoints of the DWD Opendata website.",
-    version=os.getenv("GIT_COMMIT_SHA"),
+    version=os.environ["GIT_COMMIT_SHA"],
     log_prints=True,
     retry_delay_seconds=20,
     retries=5,
@@ -70,7 +71,7 @@ def download_files(url: str, link_and_category: list, save_path: str) -> None:
     name="Unzip-Files",
     task_run_name="unzip-{category}-files",
     description="Unzips txt files from compressed files and saves them according to data type.",
-    version=os.getenv("GIT_COMMIT_SHA"),
+    version=os.environ["GIT_COMMIT_SHA"],
     log_prints=True,
 )
 def unzip(category: str) -> None:
@@ -113,7 +114,7 @@ def unzip(category: str) -> None:
     name="Fetch-Datasets",
     task_run_name="load-{df_name}-dataset",
     description="Loads DataFrames from .txt-files into memory.",
-    version=os.getenv("GIT_COMMIT_SHA"),
+    version=os.environ["GIT_COMMIT_SHA"],
     log_prints=True,
     # cache_key_fn=task_input_hash,
     # cache_expiration=timedelta(seconds=30),
@@ -251,7 +252,7 @@ def fetch_dataset(df_name: str) -> (pd.DataFrame, str()):
     name="Transform",
     task_run_name="transform-{df_name}-dataframe",
     description="Transforms dates to correct format and other small changes.",
-    version=os.getenv("GIT_COMMIT_SHA"),
+    version=os.environ["GIT_COMMIT_SHA"],
     log_prints=True,
     # cache_key_fn=task_input_hash,
     # cache_expiration=timedelta(seconds=30),
@@ -264,6 +265,7 @@ def transform(df: pd.DataFrame, df_name: str) -> pd.DataFrame:
             df["MESS_DATUM"], format="%Y%m%d", errors="coerce", utc=False
         ).dt.tz_localize("Europe/Brussels", ambiguous="NaT", nonexistent="NaT")
         df["year"] = df["MESS_DATUM"].dt.strftime("%Y")
+        df = df.sort_values(by=["MESS_DATUM"], ascending=True)
     if df_name == "metadata_geo":
         df["Stations_id"] = df["Stations_id"].str.replace(" ", "")
         df["von_datum"] = pd.to_datetime(
@@ -290,7 +292,7 @@ def transform(df: pd.DataFrame, df_name: str) -> pd.DataFrame:
     name="Write-to-Local",
     task_run_name="save-{df_name}-dataframe-locally",
     description="Write DataFrame out locally as partitioned parquet file or csv.",
-    version=os.getenv("GIT_COMMIT_SHA"),
+    version=os.environ["GIT_COMMIT_SHA"],
     log_prints=True,
     # cache_key_fn=task_input_hash,
     # cache_expiration=timedelta(seconds=30),
@@ -312,13 +314,17 @@ def write_local(df: pd.DataFrame, df_name: str) -> Path:
     name="Write-to-GCS",
     task_run_name="upload-{path}",
     description="Writes local data to Google Cloud Storage using the GCSBucket Block.",
-    version=os.getenv("GIT_COMMIT_SHA"),
+    version=os.environ["GIT_COMMIT_SHA"],
     log_prints=True,
     timeout_seconds=600,
 )
 def write_gcs(path: Path) -> None:
     """Upload local parquet file using `path` object to GCS"""
-    gcs_bucket = GcsBucket.load("gcs-dtc-bucket")
+    gcp_credentials = GcpCredentials.load("gcp-credentials-block")
+    gcs_bucket = GcsBucket(
+        bucket=os.environ["BUCKET_NAME"],
+        gcp_credentials=gcp_credentials,
+    )
     to_path = Path("data/")
     if path.name == "main":
         gcs_bucket.put_directory(local_path=path, to_path=path)
@@ -331,7 +337,7 @@ def write_gcs(path: Path) -> None:
     name="ETL_Web-to-Local",
     flow_run_name="download-{category}-files",
     description="Downloads and unzips files from DWD Opendata website.",
-    version=os.getenv("GIT_COMMIT_SHA"),
+    version=os.environ["GIT_COMMIT_SHA"],
     log_prints=True,
 )
 def etl_web_to_local(category: str) -> Path:
@@ -354,7 +360,7 @@ def etl_web_to_local(category: str) -> Path:
     name="ETL_Transform_Write",
     flow_run_name="transform-{df_name}-dataset",
     description="Transforms and saves dataset to parquet-file.",
-    version=os.getenv("GIT_COMMIT_SHA"),
+    version=os.environ["GIT_COMMIT_SHA"],
     log_prints=True,
 )
 def etl_transform_write(df_name: str) -> Path:
@@ -371,7 +377,7 @@ def etl_transform_write(df_name: str) -> Path:
     name="ETL_Local_to_GCloud_Storage",
     flow_run_name="upload-to-{path}",
     description="Writes local data to Google Cloud Storage using the GCSBucket Block.",
-    version=os.getenv("GIT_COMMIT_SHA"),
+    version=os.environ["GIT_COMMIT_SHA"],
     log_prints=True,
 )
 def etl_local_to_gcs(path: Path) -> None:
@@ -380,10 +386,27 @@ def etl_local_to_gcs(path: Path) -> None:
 
 
 @flow(
+    name="ETL_GCloud_Storage_to_BQ",
+    flow_run_name="load-into-bq",
+    description="Loads GCloud storage data into BigQuery dataset .",
+    version=os.environ["GIT_COMMIT_SHA"],
+    log_prints=True,
+)
+def etl_bigquery_load_cloud_storage_flow() -> None:
+    gcp_credentials = GcpCredentials.load("gcp-credentials-block")
+    bigquery_load_cloud_storage(
+        dataset=os.environ["DATASET_NAME"],
+        table="temperatures_all",
+        uri="gs://dwd_project/data/final/main/*",
+        gcp_credentials=gcp_credentials,
+    )
+
+
+@flow(
     name="ETL_Parent_Flow",
     flow_run_name="orchestrate-child-flows",
     description="Creates flows handling the download, unpacking, transforming, saving and uploading.",
-    version=os.getenv("GIT_COMMIT_SHA"),
+    version=os.environ["GIT_COMMIT_SHA"],
     log_prints=True,
 )
 def etl_parent_flow(
@@ -401,6 +424,7 @@ def etl_parent_flow(
     for path in paths:
         try:
             etl_local_to_gcs(path)
+            etl_bigquery_load_cloud_storage_flow()
         except OSError:
             print(f"Connection Timeout. Try uploading manually.\nFile: {path.name}")
 

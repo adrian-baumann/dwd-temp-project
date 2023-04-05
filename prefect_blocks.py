@@ -1,4 +1,4 @@
-from prefect_gcp import GcpCredentials, GcsBucket
+from prefect_gcp import GcpCredentials, GcsBucket, BigQueryWarehouse
 from prefect.infrastructure import Process
 import os
 
@@ -29,15 +29,6 @@ def main() -> None:
     GcpCredentials(service_account_info=service_account_info).save(
         "gcp-credentials-block", overwrite=True
     )
-
-    gcp_credentials = GcpCredentials.load("gcp-credentials-block")
-
-    cloud_storage_client = gcp_credentials.get_cloud_storage_client()
-    gcs_bucket = GcsBucket(
-        bucket=os.environ["BUCKET_NAME"],
-        gcp_credentials=gcp_credentials,
-    )
-    gcs_bucket.save("gcs-dtc-bucket", overwrite=True)
 
     local_storage_block = Process(working_dir=os.getcwd())
     local_storage_block.save("local-storage-block", overwrite=True)
