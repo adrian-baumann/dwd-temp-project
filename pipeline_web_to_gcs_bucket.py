@@ -392,22 +392,6 @@ def etl_bigquery_load_cloud_storage_flow() -> None:
         uri=uri,
         job_config={
             "autodetect": True,
-            "schema": [
-                bigquery.SchemaField("stations_id", "STRING", mode="REQUIRED"),
-                bigquery.SchemaField("mess_datum", "STRING", mode="NULLABLE"),
-                bigquery.SchemaField("qn_3", "INT", mode="NULLABLE"),
-                bigquery.SchemaField("qn_4", "INT", mode="NULLABLE"),
-                bigquery.SchemaField("rsk", "FLOAT", mode="NULLABLE"),
-                bigquery.SchemaField("rskf", "INT", mode="NULLABLE"),
-                bigquery.SchemaField("shk_tag", "INT", mode="NULLABLE"),
-                bigquery.SchemaField("nm", "STRING", mode="NULLABLE"),
-                bigquery.SchemaField("tmk", "FLOAT", mode="NULLABLE"),
-                bigquery.SchemaField("upm", "FLOAT", mode="NULLABLE"),
-                bigquery.SchemaField("txk", "FLOAT", mode="NULLABLE"),
-                bigquery.SchemaField("tnk", "FLOAT", mode="NULLABLE"),
-                bigquery.SchemaField("tgk", "FLOAT", mode="NULLABLE"),
-                bigquery.SchemaField("year", "INT", mode="NULLABLE"),
-            ],
         },
         gcp_credentials=gcp_credentials,
     )
