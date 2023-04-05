@@ -394,7 +394,7 @@ def etl_bigquery_load_cloud_storage_flow() -> None:
         location=location,
         job_config={
             "autodetect": True,
-            "encoding": "latin",
+            "encoding": "ISO-8859-1",
         },
         gcp_credentials=gcp_credentials,
     )
