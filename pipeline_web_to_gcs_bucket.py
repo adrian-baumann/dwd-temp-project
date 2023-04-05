@@ -388,13 +388,13 @@ def etl_bigquery_load_cloud_storage_flow() -> None:
     location = os.environ["DATASET_LOCATION"]
     table = f"{dataset}_all"
     uri = "gs://dwd_project/data/final/main/*"
+
+    client = bigquery.Client()
+
     hive_partitioning_opts = bigquery.HivePartitioningOptions()
     hive_partitioning_opts.mode = "AUTO"
     hive_partitioning_opts.source_uri_prefix = "gs://dwd_project/data/final/main/"
 
-    # Construct a BigQuery client object.
-    client = bigquery.Client()
-    # TODO(developer): Set table_id to the ID of the table to create.
     table_id = f"{project_id}.{dataset}.{table}"
     job_config = bigquery.LoadJobConfig(
         hive_partitioning=hive_partitioning_opts,
@@ -418,17 +418,17 @@ def etl_parent_flow(
     df_names: list[str] = ["main", "metadata_geo", "metadata_operator"],
     download_data: bool = False,
 ) -> None:
-    # paths = []
+    paths = []
 
-    # if download_data:
-    #     for category in dataset_categories:
-    #         etl_web_to_local(category)
-    # for df_name in df_names:
-    #     paths.append(etl_transform_write(df_name))
+    if download_data:
+        for category in dataset_categories:
+            etl_web_to_local(category)
+    for df_name in df_names:
+        paths.append(etl_transform_write(df_name))
 
     try:
-        # for path in paths:
-        #     etl_local_to_gcs(path)
+        for path in paths:
+            etl_local_to_gcs(path)
         etl_bigquery_load_cloud_storage_flow()
     except OSError:
         print(f"Connection Timeout. Try uploading manually.\nFile: {path.name}")
