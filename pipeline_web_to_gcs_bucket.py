@@ -7,7 +7,7 @@ from prefect import flow, task
 from prefect_gcp.cloud_storage import GcsBucket, GcpCredentials
 
 from prefect_gcp import bigquery
-from google.cloud.bigquery import HivePartitioningOptions
+from google.cloud.bigquery import HivePartitioningOptions, LoadJobConfig
 from random import randint
 from prefect.tasks import task_input_hash
 from datetime import timedelta
@@ -398,16 +398,17 @@ def etl_bigquery_load_cloud_storage_flow() -> None:
     hive_partitioning_opts.require_partition_filter = True
     hive_partitioning_opts.source_uri_prefix = "gs://dwd_project/data/final/main/"
 
+    job_config = LoadJobConfig(
+        hivePartitioningOptions=hive_partitioning_opts,
+        sourceFormat="PARQUET",
+        encoding="ISO-8859-1",
+    )
     bigquery.bigquery_load_cloud_storage(
         dataset=dataset,
         table=table,
         uri=uri,
         location=location,
-        job_config={
-            "encoding": "ISO-8859-1",
-            "hivePartitioningOptions": hive_partitioning_opts,
-            "sourceFormat": "PARQUET",
-        },
+        job_config=job_config,
         gcp_credentials=gcp_credentials,
     )
 
