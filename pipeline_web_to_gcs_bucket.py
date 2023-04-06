@@ -6,7 +6,6 @@ import pyarrow as pa
 from prefect import flow, task
 from prefect_gcp.cloud_storage import GcsBucket, GcpCredentials
 from google.cloud import storage, bigquery
-from prefect.tasks import task_input_hash
 from datetime import timedelta
 
 import requests
@@ -107,8 +106,6 @@ def unzip(category: str) -> None:
     task_run_name="load-{df_name}-dataset",
     description="Loads DataFrames from .txt-files into memory.",
     log_prints=True,
-    # cache_key_fn=task_input_hash,
-    # cache_expiration=timedelta(seconds=30),
 )
 def fetch_dataset(df_name: str) -> (pd.DataFrame, str()):
     """Reads in datasets by creating lists of small dataframes and concatenating them"""
@@ -254,8 +251,6 @@ def fetch_dataset(df_name: str) -> (pd.DataFrame, str()):
     task_run_name="transform-{df_name}-dataframe",
     description="Transforms dates to correct format and other small changes.",
     log_prints=True,
-    # cache_key_fn=task_input_hash,
-    # cache_expiration=timedelta(seconds=30),
 )
 def transform(df: pd.DataFrame, df_name: str) -> pd.DataFrame:
     """Fix dtype issues"""
@@ -282,7 +277,7 @@ def transform(df: pd.DataFrame, df_name: str) -> pd.DataFrame:
         df.rename(
             {"GEOGR.BREITE": "geogr_breite", "GEOGR.LAENGE": "geogr_laenge"},
             inplace=True,
-        ).reset_index(drop=True)
+        )
     if df_name == "metadata_operator":
         df["stations_id"] = (
             df["stations_id"].str.replace(" ", "").str.pad(5, fillchar="0")
@@ -293,7 +288,6 @@ def transform(df: pd.DataFrame, df_name: str) -> pd.DataFrame:
         df["betrieb_bis_datum"] = pd.to_datetime(
             df["betrieb_bis_datum"], format="%Y%m%d", errors="coerce", utc=False
         ).dt.tz_localize("Europe/Brussels", ambiguous="NaT")
-        df = df.reset_index(drop=True)
     df.columns = df.columns.str.replace(" ", "")
     df.columns = [col_name.lower() for col_name in df.columns]
     print(f"rows: {len(df)}")
@@ -305,8 +299,6 @@ def transform(df: pd.DataFrame, df_name: str) -> pd.DataFrame:
     task_run_name="save-{df_name}-dataframe-locally",
     description="Write DataFrame out locally as partitioned parquet file or csv.",
     log_prints=True,
-    # cache_key_fn=task_input_hash,
-    # cache_expiration=timedelta(seconds=30),
 )
 def write_local(df: pd.DataFrame, df_name: str) -> Path:
     """Write DataFrame out locally as parquet file"""

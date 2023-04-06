@@ -4,28 +4,17 @@ Color_Off='\033[0m'
 
 
 # DESCRIPTION:
-# TODO: ADD DESCRIPTION
+# When your run this script (from your vms root) it will do the following:
+# 1. download and install direnv and pip3
+# 2. clone the project repo
+# 3. download python packages via requirements.txt
+# 4. set prefect blocks
+# 5. start up prefect agent and server in their own tmux terminals
+# 6. run a prefect deployment build/apply to update the deployment yaml
+# 7. run the prefect deployment  
 
 # -------------------------------------------------------------
-# -------------------------DOCKER------------------------------
-
-# Update the apt package index and install packages to allow apt to use a repository over HTTPS
-# sudo apt update
-# sudo apt install apt-transport-https ca-certificates curl software-properties-common
-
-# # Add Docker’s official GPG key
-# curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add - 
-
-# # The following command is to set up the stable repository
-# sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu `lsb_release -cs` stable" 
-
-# # Update the apt package index, and install the latest version of Docker Engine and container, or go to the next step to install a specific version
-# sudo apt update 
-# sudo apt install -y docker-ce
-
-# # Install docker compose
-# sudo apt-get update
-# sudo apt-get install docker-compose-plugin
+# --------------------SUDO-INSTALLS----------------------------
 
 # Install direnv
 sudo apt-get update
@@ -41,7 +30,7 @@ sudo apt install python3-pip
 
 # some env vars
 export BUCKET_NAME="dwd_project" 
-export DATASET_NAME="temperatures" 
+export DATASET_NAME="weather" 
 export DATASET_LOCATION="europe-west6" 
 
 
