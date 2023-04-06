@@ -336,12 +336,6 @@ def write_gcs(path: Path) -> None:
         gcp_credentials=gcp_credentials,
     )
 
-    storage_client = storage.Client()
-    bucket = storage_client.get_bucket(bucket_or_name=os.environ["BUCKET_NAME"])
-    blobs = bucket.list_blobs(prefix="data/final/")
-    for blob in blobs:
-        blob.delete()
-
     to_path = Path("data/")
     if path.name == "main":
         gcs_bucket.put_directory(local_path=path, to_path=path)
@@ -457,6 +451,12 @@ def etl_parent_flow(
         paths.append(etl_transform_write(df_name))
 
     try:
+        storage_client = storage.Client()
+        bucket = storage_client.get_bucket(bucket_or_name=os.environ["BUCKET_NAME"])
+        blobs = bucket.list_blobs(prefix="data/final/")
+        for blob in blobs:
+            blob.delete()
+
         for path in paths:
             etl_local_to_gcs(path)
     except OSError:
