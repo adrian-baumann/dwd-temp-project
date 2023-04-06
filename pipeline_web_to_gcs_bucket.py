@@ -265,10 +265,11 @@ def transform(df: pd.DataFrame, df_name: str) -> pd.DataFrame:
             df["MESS_DATUM"], format="%Y%m%d", errors="coerce", utc=False
         ).dt.tz_localize("Europe/Brussels", ambiguous="NaT", nonexistent="NaT")
         df["year"] = df["MESS_DATUM"].dt.strftime("%Y")
-        df["STATIONS_ID"] = df["STATIONS_ID"].str.replace(" ", "")
+        df["STATIONS_ID"] = df["STATIONS_ID"].str.replace(" ", "").zfill(5)
+
         df = df.sort_values(by=["MESS_DATUM"], ascending=True)
     if df_name == "metadata_geo":
-        df["Stations_id"] = df["Stations_id"].str.replace(" ", "")
+        df["Stations_id"] = df["Stations_id"].str.replace(" ", "").zfill(5)
         df["von_datum"] = pd.to_datetime(
             df["von_datum"], format="%Y%m%d", errors="coerce", utc=False
         ).dt.tz_localize("Europe/Brussels", ambiguous="NaT")
@@ -276,7 +277,7 @@ def transform(df: pd.DataFrame, df_name: str) -> pd.DataFrame:
             df["bis_datum"], format="%Y%m%d", errors="coerce", utc=False
         ).dt.tz_localize("Europe/Brussels", ambiguous="NaT")
     if df_name == "metadata_operator":
-        df["stations_id"] = df["stations_id"].str.replace(" ", "")
+        df["stations_id"] = df["stations_id"].str.replace(" ", "").zfill(5)
         df["betrieb_von_datum"] = pd.to_datetime(
             df["betrieb_von_datum"], format="%Y%m%d", errors="coerce", utc=False
         ).dt.tz_localize("Europe/Brussels", ambiguous="NaT")

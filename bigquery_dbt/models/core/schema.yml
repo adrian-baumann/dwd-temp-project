@@ -1,31 +1,156 @@
-version: 2
+version: 1
 
 models:
-  - name: dim_zones
+  - name: dim_geo
     description: >
-      List of unique zones idefied by locationid. 
-      Includes the service zone they correspond to (Green or yellow).
-  - name: fact_trips
+      List of geographical locations of weather stations. Stations changed locations over time, this table reflects these scenarios
+  - name: dim_operator
     description: >
-      Taxi trips corresponding to both service zones (Green and yellow).
-      The table contains records where both pickup and dropoff locations are valid and known zones. 
-      Each record corresponds to a trip uniquely identified by tripid. 
-  - name: fact_fhv_trips
+      List of operators of weather stations. Stations changed operators over time, this table reflects these scenarios.
+  - name: fact_measurements
     description: >
-      For-Hire-Vehicle trips.
-      The table contains records where both pickup and dropoff locations are valid and known zones. 
-      Each record corresponds to a trip uniquely identified by tripid. 
-  
-  - name: dm_monthly_zone_revenue
-    description: >
-      Aggregated table of all taxi trips corresponding to both service zones (Green and yellow) per pickup zone, month and service.
-      The table contains monthly sums of the fare elements used to calculate the monthly revenue. 
-      The table contains also monthly indicators like number of trips, and average trip distance. 
+      Mean daily measurements.
+      Table contains records of daily measurements. Values are totals, mean-averages, minima and maxima.
+      Each measurement has a corresponding quality level (qn3, qn4), with a value of
+      Each record corresponds to a trip uniquely identified by tripid      .  
     columns:
-      - name: revenue_monthly_total_amount
-        description: Monthly sum of the the total_amount of the fare charged for the trip per pickup zone, month and service.
+      - name: measurement_id
+        description: Primary key for this table, generated with a concatenation of station_id+dt_measurement
+        data_type: string
+          tests:
+          - unique:
+              severity: warn
+          - not_null:
+              severity: warn
+      - name: station_id
+        description: A code indicating the weather-station at which the measurements took place 
+        data_type: integer
+      - name: dt_measurement
+        description: >
+          The time and date at which the measurement was recorded. 
+          Some earlier measurements were done manually, so this timestamp may not be perfectly accurate.
+      - name: station_name
+        description: The weather-stations' name.
+        type
+      - name: operator_name
+        description:
+      - name: station_height_m
+        description:
+      - name: latitude
+        description:
+      - name: longitude
+        description:
+      - name: quality_niveau_3
+        description:
+      - name: quality_niveau_4
+        description:
+      - name: max_wind_gust_mps_qn3
+        description:
+      - name: mean_wind_velocity_mps_qn3
+        description:
+      - name: precipitation_heigt_mm_qn4
+        description:
+      - name: precipitation_type_qn4
+        description:
+      - name: sunshine_duration_h_qn4
+        description:
+      - name: snow_depth_cm_qn4
+        description:
+      - name: mean_cloud_coverage_qn4
+        description:
+      - name: mean_vapour_pressure_hpa_qn4
+        description:
+      - name: mean_pressure_hpa_qn4
+        description:
+      - name: mean_temperature_2m_c_qn4
+        description:
+      - name: mean_rel_humidity_qn4
+        description:
+      - name: max_temperature_2m_c_qn4
+        description:
+      - name: min_temperature_2m_c_qn4
+        description:
+      - name: mean_temperature_5cm_c_qn4
+        description:
+      - name: measurement_id
+        description: Primary key for this table, generated with a concatenation of vendorid+pickup_datetime
         tests:
+            - unique:
+                severity: warn
             - not_null:
-                severity: error
-      
-      
+                severity: warn
+      - name: station_id 
+        description: > 
+            A code indicating the TPEP provider that provided the record.
+      - name: pickup_datetime 
+        description: The date and time when the meter was engaged.
+      - name: dropoff_datetime 
+        description: The date and time when the meter was disengaged.
+      - name: Passenger_count 
+        description: The number of passengers in the vehicle. This is a driver-entered value.
+      - name: Trip_distance 
+        description: The elapsed trip distance in miles reported by the taximeter.
+      - name: Pickup_locationid
+        description: locationid where the meter was engaged.
+        tests:
+          - relationships:
+              to: ref('taxi_zone_lookup')
+              field: locationid
+              severity: warn
+      - name: dropoff_locationid 
+        description: locationid where the meter was engaged.
+        tests:
+          - relationships:
+              to: ref('taxi_zone_lookup')
+              field: locationid
+      - name: RateCodeID 
+        description: >
+            The final rate code in effect at the end of the trip.
+              1= Standard rate
+              2=JFK
+              3=Newark
+              4=Nassau or Westchester
+              5=Negotiated fare
+              6=Group ride
+      - name: Store_and_fwd_flag 
+        description: > 
+          This flag indicates whether the trip record was held in vehicle
+          memory before sending to the vendor, aka “store and forward,”
+          because the vehicle did not have a connection to the server.
+            Y= store and forward trip
+            N= not a store and forward trip
+      - name: Dropoff_longitude 
+        description: Longitude where the meter was disengaged.
+      - name: Dropoff_latitude 
+        description: Latitude where the meter was disengaged.
+      - name: Payment_type 
+        description: >
+          A numeric code signifying how the passenger paid for the trip.
+        tests: 
+          - accepted_values:
+              values: "{{ var('payment_type_values') }}"
+              severity: warn
+              quote: false
+      - name: payment_type_description
+        description: Description of the payment_type code
+      - name: Fare_amount 
+        description: > 
+          The time-and-distance fare calculated by the meter.
+          Extra Miscellaneous extras and surcharges. Currently, this only includes
+          the $0.50 and $1 rush hour and overnight charges.
+          MTA_tax $0.50 MTA tax that is automatically triggered based on the metered
+          rate in use.
+      - name: Improvement_surcharge 
+        description: > 
+          $0.30 improvement surcharge assessed trips at the flag drop. The
+          improvement surcharge began being levied in 2015.
+      - name: Tip_amount 
+        description: > 
+          Tip amount. This field is automatically populated for credit card
+          tips. Cash tips are not included.
+      - name: Tolls_amount 
+        description: Total amount of all tolls paid in trip.
+      - name: Total_amount 
+        description: The total amount charged to passengers. Does not include cash tips.
+    
+    
