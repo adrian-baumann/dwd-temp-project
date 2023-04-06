@@ -139,6 +139,7 @@ def fetch_dataset(df_name: str) -> (pd.DataFrame, str()):
         }
         usecols = [
             "STATIONS_ID",
+            "MESS_DATUM",
             "QN_3",
             "  FX",
             "  FM",

@@ -30,6 +30,24 @@ select
 from tripdata
 where rn = 1
 
+"STATIONS_ID",
+            "QN_3",
+            "  FX",
+            "  FM",
+            "QN_4",
+            " RSK",
+            "RSKF",
+            " SDK",
+            "SHK_TAG",
+            "  NM",
+            " VPM",
+            "  PM",
+            " TMK",
+            " UPM",
+            " TXK",
+            " TNK",
+            " TGK",
+
 
 -- dbt build --m <model.sql> --var 'is_test_run: false'
 {% if var('is_test_run', default=false) %}
