@@ -49,6 +49,8 @@ export DATASET_LOCATION="europe-west6"
 git clone https://github.com/adrian-baumann/dwd-temp-project.git
 
 mv ./.envrc ./dwd-temp-project/ 
+cp ./data/final/metadata_geo.csv ./bigquery_dbt/seeds/
+cp ./data/final/metadata_operator.csv ./bigquery_dbt/seeds/
 # change directory and direnv allow
 NOW=$(date +"%H:%M:%S")
 echo -e "$NOW  --  Changing working directory to local clone of git repo${Color_Off}"
@@ -104,5 +106,7 @@ python3 ./prefect_run.py
 
 NOW=$(date +"%H:%M:%S")
 echo -e "${Color}${NOW}  --  Finished flow run.${Color_Off}"
+
+
 # TODO: pre-commit hook for the following:
 # poetry export -f requirements.txt -o requirements.txt --without-hashes

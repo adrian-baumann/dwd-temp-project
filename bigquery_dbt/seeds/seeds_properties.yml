@@ -1,0 +1,12 @@
+version: 1
+
+seeds: 
+  - name: metadata_geo
+    description: >
+      Geographical metadata information about the weather stations. Holds coordinates, height above sea level.
+
+  
+  - name: metadata_operator
+    description: >
+      Operations metadata information about the weather stations. Holds names and duration of operator.
+            
