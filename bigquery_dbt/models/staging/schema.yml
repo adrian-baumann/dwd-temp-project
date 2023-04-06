@@ -1,5 +1,4 @@
-
-version: 1
+version: 2
 
 sources:
     - name: staging
@@ -13,15 +12,11 @@ sources:
            # error_after: {count: 6, period: hour}
 
 models:
-
-
-    - name: stg_green_rides
+    - name: stg_measurments
       description: >
-        Trip made by green taxis, also known as boro taxis and street-hail liveries.
-        Green taxis may respond to street hails,but only in the areas indicated in green on the
-        map (i.e. above W 110 St/E 96th St in Manhattan and in the boroughs).
-        The records were collected and provided to the NYC Taxi and Limousine Commission (TLC) by
-        technology service providers. 
+        Mean daily measurements.
+        Table contains records of daily measurements. Values are totals, mean-averages, minima and maxima.
+        Each measurement has a corresponding quality level, indicated by the suffix _qn3 and _qn4.
       columns:
         - name: measurement_id 
           description: placeholder
@@ -75,7 +70,7 @@ models:
                 quote: false
         - name: sunshine_duration_h_qn4
           description: placeholder
-          data_type: integer
+          data_type: float
         - name: snow_depth_cm_qn4
           description: placeholder
           data_type: integer

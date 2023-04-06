@@ -322,6 +322,22 @@ def write_local(df: pd.DataFrame, df_name: str) -> Path:
 
 
 @task(
+    name="Delete-old-files-from-GCS",
+    task_run_name="delete-old-files",
+    description="Deletes all old files and replaces the on Google Cloud Storage.",
+    log_prints=True,
+    timeout_seconds=600,
+)
+def delete_old_files(path_prefix: str = "data/final/") -> None:
+    """Upload local parquet file using `path` object to GCS"""
+    storage_client = storage.Client()
+    bucket = storage_client.get_bucket(bucket_or_name=os.environ["BUCKET_NAME"])
+    blobs = bucket.list_blobs(prefix=path_prefix)
+    for blob in blobs:
+        blob.delete()
+
+
+@task(
     name="Write-to-GCS",
     task_run_name="upload-{path}",
     description="Writes local data to Google Cloud Storage using the GCSBucket Block.",
@@ -341,7 +357,6 @@ def write_gcs(path: Path) -> None:
         gcs_bucket.put_directory(local_path=path, to_path=path)
     else:
         gcs_bucket.upload_from_path(from_path=path, to_path=path, timeout=600)
-    return
 
 
 @flow(
@@ -451,12 +466,7 @@ def etl_parent_flow(
         paths.append(etl_transform_write(df_name))
 
     try:
-        storage_client = storage.Client()
-        bucket = storage_client.get_bucket(bucket_or_name=os.environ["BUCKET_NAME"])
-        blobs = bucket.list_blobs(prefix="data/final/")
-        for blob in blobs:
-            blob.delete()
-
+        delete_old_files()
         for path in paths:
             etl_local_to_gcs(path)
     except OSError:
