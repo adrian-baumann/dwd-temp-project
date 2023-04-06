@@ -24,7 +24,18 @@ models:
               severity: warn
       - name: station_id
         description: A code indicating the weather-station at which the measurements took place 
-        data_type: integer
+        data_type: string
+        tests:
+          - not_null:
+              severity: warn
+          - relationships:
+              to: ref('dim_geo')
+              field: station_id
+              severity: warn
+          - relationships:
+              to: ref('dim_operator')
+              field: station_id
+              severity: warn
       - name: dt_measurement
         description: >
           The time and date at which the measurement was recorded. 

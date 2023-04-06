@@ -49,6 +49,18 @@ select
 
 from measurements
 left join dim_geo as geo
-on measurements.station_id = geo.station_id and measurements.dt_measurement between geo.dt_geo_start and geo.dt_geo_end
+    on measurements.station_id = geo.station_id 
+    and measurements.dt_measurement >= geo.dt_geo_start 
+    and (
+        geo.dt_geo_end is null
+        or
+        measurements.dt_measurement <= geo.dt_geo_end
+    )
 left join dim_operator as operator
-on measurements.station_id = operator.station_id and measurements.dt_measurement between operator.dt_op_start and operator.dt_op_end
+    on measurements.station_id = operator.station_id 
+    and measurements.dt_measurement >= operator.dt_op_start 
+    and (
+        operator.dt_op_end is null
+        or
+        measurements.dt_measurement <= operator.dt_op_end
+    )

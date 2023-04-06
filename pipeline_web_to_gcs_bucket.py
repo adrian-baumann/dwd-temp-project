@@ -5,7 +5,7 @@ import pandas as pd
 import pyarrow as pa
 from prefect import flow, task
 from prefect_gcp.cloud_storage import GcsBucket, GcpCredentials
-from google.cloud import bigquery
+from google.cloud import storage, bigquery
 from prefect.tasks import task_input_hash
 from datetime import timedelta
 
@@ -335,6 +335,13 @@ def write_gcs(path: Path) -> None:
         bucket=os.environ["BUCKET_NAME"],
         gcp_credentials=gcp_credentials,
     )
+
+    storage_client = storage.Client()
+    bucket = storage_client.get_bucket(bucket_or_name=os.environ["BUCKET_NAME"])
+    blobs = bucket.list_blobs(prefix="data/final/")
+    for blob in blobs:
+        blob.delete()
+
     to_path = Path("data/")
     if path.name == "main":
         gcs_bucket.put_directory(local_path=path, to_path=path)
