@@ -18,7 +18,7 @@ select
     measurements.station_id,
 
     -- timestamp
-    measurement.dt_measurement,
+    measurement.dt_measurement_utc,
 
     -- weather station info
     dim_geo.station_name,

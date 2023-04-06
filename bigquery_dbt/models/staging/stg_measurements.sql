@@ -13,7 +13,7 @@ select
     cast(station_ids as integer) as station_id,
 
     -- timestamp
-    cast(mess_datum as timestamp) as dt_measurement,
+    cast(mess_datum as timestamp) as dt_measurement_utc,
     
     -- measurement quality level
     cast(qn_3 as integer) as quality_niveau_3,
