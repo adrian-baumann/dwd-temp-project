@@ -1,5 +1,17 @@
 version: 2
 
+sources:
+    - name: core
+      #For bigquery:
+      database: dtc-de-zoomcamp-376519
+      schema: temperatures
+
+      tables:
+        - name: metadata_geo
+        - name: metadata_operator
+         # freshness:
+           # error_after: {count: 6, period: hour}
+
 models:
   - name: dim_geo
     description: >
@@ -20,14 +32,13 @@ models:
       - name: dt_geo_start
         data_type: timestamp
         description: > 
-        Begin of time period.
-        Either the weather        
+          Begin of time period. Either the weather.        
       - name: dt_geo_end
         data_type: timestamp
         description: > 
-        End of time period. 
-        If null then the weather-station is currently operating under the selected geographical configuration.
-        If not null then something changed and the weather-station is currently not operating under the selected geographical configuration.
+          End of time period. 
+          If null then the weather-station is currently operating under the selected geographical configuration.
+          If not null then something changed and the weather-station is currently not operating under the selected geographical configuration.
       - name: station_name
         description: The weather-stations' name at the time of measurement.
         data_type: string
@@ -43,7 +54,7 @@ models:
       - name: measurement_id
         description: Primary key for this table, generated with a concatenation of station_id+dt_measurement
         data_type: string
-          tests:
+        tests:
           - unique:
               severity: warn
           - not_null:

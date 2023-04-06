@@ -1,4 +1,4 @@
-,stations_id,stationshoehe,geogr.breite,geogr.laenge,von_datum,bis_datum,stationsname
+,stations_id,stationshoehe,geogr_breite,geogr_laenge,von_datum,bis_datum,stationsname
 0,2485,556.0,48.9293,9.6425,1934-09-01 00:00:00+01:00,1940-12-31 00:00:00+02:00,Kaisersbach-Cronhütte
 1,2485,564.0,48.9282,9.6389,1948-10-01 00:00:00+01:00,1950-10-31 00:00:00+01:00,Kaisersbach-Cronhütte
 2,2485,565.0,48.9284,9.6389,1950-11-01 00:00:00+01:00,1953-04-30 00:00:00+01:00,Kaisersbach-Cronhütte

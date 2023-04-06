@@ -1,4 +1,13 @@
-{{ config(materialized='table') }}
+{{
+ config(
+   materialized = 'table',
+   partition_by = {
+     'field': 'dt_measurement_utc', 
+     'data_type': 'timestamp'
+     'granularity': 'month'
+   }
+ )
+}}
 
 with measurements as (
     select *
@@ -18,14 +27,13 @@ select
     measurements.station_id,
 
     -- timestamp
-    measurement.dt_measurement_utc,
+    measurements.dt_measurement_utc,
 
     -- weather station info
-    dim_geo.station_name,
-    dim_operator.operator_name,
-    dim_geo.station_height_m,
-    dim_geo.latitude,
-    dim_geo.longitude,
+    geo.station_name,
+    operator.operator_name,
+    geo.station_height_m,
+    concat(geo.latitude, ",", geo.longitude) as lat_long,
 
     -- measurement quality
     measurements.quality_niveau_3,
@@ -45,22 +53,22 @@ select
     measurements.mean_rel_humidity_qn4,
     measurements.max_temperature_2m_c_qn4,
     measurements.min_temperature_2m_c_qn4,
-    measurements.mean_temperature_5cm_c_qn4,
+    measurements.mean_temperature_5cm_c_qn4
 
 from measurements
 left join dim_geo as geo
     on measurements.station_id = geo.station_id 
-    and measurements.dt_measurement >= geo.dt_geo_start 
+    and measurements.dt_measurement_utc >= geo.dt_geo_start 
     and (
         geo.dt_geo_end is null
         or
-        measurements.dt_measurement <= geo.dt_geo_end
+        measurements.dt_measurement_utc <= geo.dt_geo_end
     )
 left join dim_operator as operator
     on measurements.station_id = operator.station_id 
-    and measurements.dt_measurement >= operator.dt_op_start 
+    and measurements.dt_measurement_utc >= operator.dt_op_start 
     and (
         operator.dt_op_end is null
         or
-        measurements.dt_measurement <= operator.dt_op_end
+        measurements.dt_measurement_utc <= operator.dt_op_end
     )

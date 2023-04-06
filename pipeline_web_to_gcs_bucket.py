@@ -268,7 +268,6 @@ def transform(df: pd.DataFrame, df_name: str) -> pd.DataFrame:
         df["STATIONS_ID"] = (
             df["STATIONS_ID"].str.replace(" ", "").str.pad(5, fillchar="0")
         )
-
         df = df.sort_values(by=["MESS_DATUM"], ascending=True)
     if df_name == "metadata_geo":
         df["Stations_id"] = (
@@ -280,6 +279,10 @@ def transform(df: pd.DataFrame, df_name: str) -> pd.DataFrame:
         df["bis_datum"] = pd.to_datetime(
             df["bis_datum"], format="%Y%m%d", errors="coerce", utc=False
         ).dt.tz_localize("Europe/Brussels", ambiguous="NaT")
+        df.rename(
+            {"GEOGR.BREITE": "geogr_breite", "GEOGR.LAENGE": "geogr_laenge"},
+            inplace=True,
+        ).reset_index(drop=True)
     if df_name == "metadata_operator":
         df["stations_id"] = (
             df["stations_id"].str.replace(" ", "").str.pad(5, fillchar="0")
@@ -290,6 +293,7 @@ def transform(df: pd.DataFrame, df_name: str) -> pd.DataFrame:
         df["betrieb_bis_datum"] = pd.to_datetime(
             df["betrieb_bis_datum"], format="%Y%m%d", errors="coerce", utc=False
         ).dt.tz_localize("Europe/Brussels", ambiguous="NaT")
+        df = df.reset_index(drop=True)
     df.columns = df.columns.str.replace(" ", "")
     df.columns = [col_name.lower() for col_name in df.columns]
     print(f"rows: {len(df)}")
@@ -437,12 +441,14 @@ def etl_bigquery_load_cloud_storage_flow() -> None:
         clustering_fields=["mess_datum"],
         hive_partitioning=hive_partitioning_opts,
         time_partitioning=time_partitioning_opts,
-        write_disposition="WRITE_TRUNCATE",
         source_format=bigquery.SourceFormat.PARQUET,
     )
-    load_job = client.load_table_from_uri(
-        uri, table_id, job_config=job_config
-    )
+
+    delete_job = client.delete_table(
+        table_id, not_found_ok=True
+    )  # Make an API request.
+    print("Deleted table '{}'.".format(table_id))
+    load_job = client.load_table_from_uri(uri, table_id, job_config=job_config)
     load_job.result()  # Waits for the job to complete.
 
 

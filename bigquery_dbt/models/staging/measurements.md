@@ -10,7 +10,9 @@ The quality levels "Qualitätsniveau" (QN) given here apply for the respective f
 - \[7\] ROUTINE control, not yet corrected
 - \[8\] quality control outside ROUTINE
 - \[9\] ROUTINE control, not all parameters corrected
-- \[10\] ROUTINE control finished, respective correctionsfinished
+- \[10\] ROUTINE control finished, respective corrections finished
+
+{% enddocs %}
  
 {% docs precipitation %}
 

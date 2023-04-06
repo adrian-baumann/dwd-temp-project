@@ -49,10 +49,11 @@
     engine_private_key_file   = "~/.ssh/<YOUR-PRIVATE-GCLOUD-COMPUTE-SSH-KEY>"
     ```
 ## Prerequisites - Local
- 1. Have this repo cloned 
- 2. Have the following installed:
+ 1. Have this repo cloned to your local machine
+ 2. Have the following installed in your local machine:
     - Terraform
     - gcloud CLI
+    - the python module `dbt-bigquery`
 
 # Setup
 
