@@ -51,7 +51,7 @@ resource "google_storage_bucket" "data-lake-bucket" {
   public_access_prevention = "enforced"
 
   versioning {
-    enabled = true
+    enabled = false
   }
 
   lifecycle_rule {

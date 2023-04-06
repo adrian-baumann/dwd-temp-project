@@ -27,7 +27,7 @@ models:
             - not_null:
                 severity: warn
         - name: station_id
-          description: A code indicating the weather-station at which the measurements took place 
+          description: A code indicating the weather-station at which the measurements took place. 
           data_type: string
           tests:
             - not_null:
