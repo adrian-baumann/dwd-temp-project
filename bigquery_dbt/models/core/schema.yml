@@ -4,7 +4,7 @@ sources:
     - name: core
       #For bigquery:
       database: dtc-de-zoomcamp-376519
-      schema: temperatures
+      schema: weather
 
       tables:
         - name: metadata_geo

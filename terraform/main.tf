@@ -80,7 +80,7 @@ resource "google_bigquery_dataset" "dataset" {
 resource "google_compute_instance" "default" {
   provider                  = google.impersonated
   description               = "Machine to run this projects code"
-  name                      = "test" # TODO: chnage name
+  name                      = "dwd-project-vm"
   machine_type              = "e2-standard-4"
   project                   = var.PROJECT_ID
   zone                      = var.zone

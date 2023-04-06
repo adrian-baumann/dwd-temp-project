@@ -1,10 +1,11 @@
 {{
  config(
    materialized = 'table',
+   cluster_by = ["dt_measurement_utc"],
    partition_by = {
      'field': 'dt_measurement_utc', 
-     'data_type': 'timestamp'
-     'granularity': 'month'
+     'data_type': 'timestamp',
+     'granularity': 'month',
    }
  )
 }}

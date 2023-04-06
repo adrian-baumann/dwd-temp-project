@@ -4,7 +4,7 @@ with temperature_data as
 (
   select *,
     row_number() over(partition by stations_id, mess_datum) as _rn
-  from {{ source('staging','temperatures_all') }}
+  from {{ source('staging','weather_all') }}
   where stations_id is not null and mess_datum is not null 
 )
 select
