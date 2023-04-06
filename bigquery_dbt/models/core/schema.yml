@@ -29,21 +29,28 @@ models:
         description: >
           The time and date at which the measurement was recorded. 
           Some earlier measurements were done manually, so this timestamp may not be perfectly accurate.
+        data_type: timestamp
       - name: station_name
         description: The weather-stations' name.
-        type
+        data_type: string
       - name: operator_name
         description:
+        data_type: string
       - name: station_height_m
         description:
+        data_type: float
       - name: latitude
         description:
+        data_type: string
       - name: longitude
         description:
+        data_type: string
       - name: quality_niveau_3
         description:
+        data_type: integer
       - name: quality_niveau_4
         description:
+        data_type: integer
       - name: max_wind_gust_mps_qn3
         description:
       - name: mean_wind_velocity_mps_qn3
