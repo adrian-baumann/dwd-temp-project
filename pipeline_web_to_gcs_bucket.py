@@ -442,7 +442,7 @@ def etl_bigquery_load_cloud_storage_flow() -> None:
     )
     load_job = client.load_table_from_uri(
         uri, table_id, job_config=job_config
-    )  # Make an API request.
+    )
     load_job.result()  # Waits for the job to complete.
 
 

@@ -12,4 +12,15 @@ The quality levels "Qualitätsniveau" (QN) given here apply for the respective f
 - \[9\] ROUTINE control, not all parameters corrected
 - \[10\] ROUTINE control finished, respective correctionsfinished
  
+{% docs precipitation %}
+
+RSKF precipitation form:
+- \[0\] no precipitation (conventional or automatic measurement), relates to WMO code 10
+- \[1\] only rain (before 1979)
+- \[4\] unknown form of recorded precipitation
+- \[6\] only rain; only liquid precipitation at automatic stations, relates to WMO code 11
+- \[7\] only snow; only solid precipitation at automatic stations, relates to WMO code 12
+- \[8\] rain and snow (and/or "Schneeregen"); liquid and solid precipitation at automatic stations, relates to WMO code 13
+- \[9\] error or missing value or no automatic determination of precipitation form, relates to WMO code 15
+
 {% enddocs %}

@@ -40,27 +40,42 @@ models:
           The time and date at which the measurement was recorded. 
           Some earlier measurements were done manually, so this timestamp may not be perfectly accurate.
         data_type: timestamp
+        tests:
+          - not_null:
+                severity: warn
       - name: station_name
-        description: The weather-stations' name.
+        description: The weather-stations' name at the time of measurement.
         data_type: string
       - name: operator_name
-        description: placeholder
+        description: The name of the entity operating the weather-station at the time of measurement.
         data_type: string
       - name: station_height_m
-        description: placeholder
+        description: Height in meters of the weather-station relative to sea level at the time of measurement.
         data_type: float
       - name: latitude
-        description: placeholder
+        description: Latitude of the weather-station.
         data_type: string
       - name: longitude
-        description: placeholder
+        description: Longitude of the weather-station.
         data_type: string
       - name: quality_niveau_3
-        description: placeholder
+        description: > 
+          Quality level of wind-related measurements. 
+          "{{ doc('quality_level') }}"
         data_type: integer
+        tests:
+          - accepted_values:
+              values: [1, 2, 3, 5, 7, 8, 9, 10]
+              quote: false
       - name: quality_niveau_4
-        description: placeholder
+        description: >
+          Quality level of non wind-related measurements (temperature, sunshine, snow, (vapour)pressure) 
+          "{{ doc('quality_level') }}"
         data_type: integer
+        tests:
+          - accepted_values:
+              values: [1, 2, 3, 5, 7, 8, 9, 10]
+              quote: false
       - name: max_wind_gust_mps_qn3
         description: placeholder
         data_type: float

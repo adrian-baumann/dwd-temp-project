@@ -59,48 +59,48 @@ models:
                 values: [1, 2, 3, 5, 7, 8, 9, 10]
                 quote: false
         - name: max_wind_gust_mps_qn3
-          description: placeholder
+          description: Daily maximum of wind gust velocity in meters per second.
           data_type: float
         - name: mean_wind_velocity_mps_qn3
-          description: placeholder
+          description: Daily mean of wind gust velocity in meters per second.
           data_type: float
         - name: precipitation_heigt_mm_qn4
-          description: placeholder
+          description: Daily precipitation height in millimeters.
           data_type: float
         - name: precipitation_type_qn4
-          description: placeholder
+          description: "{{ doc('precipitation') }}"
           data_type: integer
           tests:
             - accepted_values:
-                values: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+                values: [0, 1, 4, 6, 7, 8, 9]
                 quote: false
         - name: sunshine_duration_h_qn4
-          description: placeholder
+          description: Sum of direct sunlight time in hours from dusk until dawn.  
           data_type: float
         - name: snow_depth_cm_qn4
-          description: placeholder
+          description: Max snow depth in centimeters. 
           data_type: integer
         - name: mean_cloud_coverage_qn4
-          description: placeholder
+          description: Mean cloud coverage. Reported in fractions, e.g. "1/8"
           data_type: string
         - name: mean_vapour_pressure_hpa_qn4
-          description: placeholder
+          description: Mean vapour pressure in hPa.
           data_type: float
         - name: mean_pressure_hpa_qn4
-          description: placeholder
+          description: Mean atmospheric pressure in hPa.
           data_type: float
         - name: mean_temperature_2m_c_qn4
-          description: placeholder
+          description: Daily mean temperature at 2 meters above ground at the weather-station.
           data_type: float
         - name: mean_rel_humidity_qn4
-          description: placeholder
+          description: Daily mean humidity at 2 meters above ground at the weather-station.
           data_type: float
         - name: max_temperature_2m_c_qn4
-          description: placeholder
+          description: Daily maximum temperature at 2 meters above ground at the weather-station.
           data_type: float
         - name: min_temperature_2m_c_qn4
-          description: placeholder
+          description: Daily minimum temperature at 2 meters above ground at the weather-station.
           data_type: float
         - name: mean_temperature_5cm_c_qn4
-          description: placeholder
+          description: Daily mean temperature at 5 centimeters above ground at the weather-station.
           data_type: float
