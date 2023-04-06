@@ -20,34 +20,22 @@ select
     cast(qn_4 as integer) as qn4,
     
     -- measurements
+    cast(fx as float) as max_wind_gust_mps,
+    cast(fm  as integer) as mean_wind_velocity_mps,
     cast(rsk as float) as precipitation_heigt_mm,
     cast(rskf  as integer) as precipitation_type,
+    cast(sdk as integer) as sunshine_duration_h,
     cast(shk_tag as integer) as snow_height_cm,
-    cast(nm as string) as cloud_coverage_mean,
-    cast(rsk as float) as precipitation_heigt_um,
-    cast(rsk as float) as precipitation_heigt_um,
-    cast(rsk as float) as precipitation_heigt_um,
-from tripdata
+    cast(nm as string) as mean_cloud_coverage,
+    cast(vpa as string) as mean_vapour_pressure_hpa,
+    cast(pa as string) as mean_pressure_hpa,
+    cast(tmk as float) as mean_temperature_2m_c,
+    cast(upm as float) as mean_rel_humidity_,
+    cast(txk as float) as max_temperature_2m_c,
+    cast(tnk as float) as min_temperature_2m_c,
+    cast(tgk as float) as mean_temperature_5cm_c,
+from temperature_data
 where rn = 1
-
-"STATIONS_ID",
-            "QN_3",
-            "  FX",
-            "  FM",
-            "QN_4",
-            " RSK",
-            "RSKF",
-            " SDK",
-            "SHK_TAG",
-            "  NM",
-            " VPM",
-            "  PM",
-            " TMK",
-            " UPM",
-            " TXK",
-            " TNK",
-            " TGK",
-
 
 -- dbt build --m <model.sql> --var 'is_test_run: false'
 {% if var('is_test_run', default=false) %}
